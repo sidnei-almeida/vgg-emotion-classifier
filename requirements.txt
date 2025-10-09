@@ -1,0 +1,22 @@
+# Core dependencies (compatível com Python 3.11-3.13)
+streamlit
+numpy
+pandas
+pillow
+
+# Machine Learning & Computer Vision (CPU Optimized for Streamlit Cloud)
+# ✅ TensorFlow CPU-only - SEM CUDA - Otimizado para Streamlit Cloud
+tensorflow-cpu
+
+# OpenCV headless para detecção de rostos
+opencv-python-headless
+
+# Streamlit Extensions para câmera e navegação
+streamlit-image-select
+streamlit-option-menu
+
+# Data Visualization
+plotly
+
+# Utilities
+python-dotenv
