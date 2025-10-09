@@ -118,6 +118,15 @@ numpy                      # Computação Numérica
 pandas                     # Manipulação de Dados
 ```
 
+### 🔗 Sistema de Auto-Download
+
+**Para usuários finais:** A aplicação baixa automaticamente os arquivos necessários (modelo treinado, dados de treinamento e detector de faces) do repositório GitHub na primeira execução. Não é necessário ter o código fonte localmente!
+
+**Arquivos baixados automaticamente:**
+- `models/emotion_model.keras` - Modelo CNN treinado (1.2MB)
+- `training/training_summary.json` - Métricas de treinamento
+- `haarcascade_frontalface_default.xml` - Detector facial OpenCV
+
 ### 🔧 Configuração de Desenvolvimento
 
 Para desenvolvimento local com GPU (opcional):
@@ -283,6 +292,6 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 
 [![Stars](https://img.shields.io/github/stars/sidnei-almeida/cnn-emotion-classifier?style=social)](https://github.com/sidnei-almeida/cnn-emotion-classifier)
 
-*Desenvolvido com ❤️ e muita ☕ em São Paulo, Brasil*
+*Desenvolvido com ❤️ e muita ☕ em Caxias do Sul, Brasil*
 
 </div>

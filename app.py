@@ -13,11 +13,60 @@ from streamlit_option_menu import option_menu
 import cv2
 from streamlit_image_select import image_select
 import json
+import urllib.request
+import zipfile
 
 # Base do app
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 TRAINING_DIR = os.path.join(BASE_DIR, "training")
+
+# GitHub repository info
+GITHUB_USER = "sidnei-almeida"
+GITHUB_REPO = "cnn-emotion-classifier"
+GITHUB_RAW_BASE = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/main/"
+
+def ensure_file_exists(file_path, github_url, description=""):
+    """Garante que um arquivo existe, baixando do GitHub se necessário"""
+    if not os.path.exists(file_path):
+        st.info(f"📥 Baixando {description} do repositório...")
+
+        try:
+            # Cria diretório se não existir
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+            # Baixa o arquivo
+            urllib.request.urlretrieve(github_url, file_path)
+            st.success(f"✅ {description} baixado com sucesso!")
+            return True
+        except Exception as e:
+            st.error(f"❌ Erro ao baixar {description}: {str(e)}")
+            return False
+    return True
+
+def ensure_model_files():
+    """Garante que todos os arquivos necessários estão disponíveis"""
+    files_ok = True
+
+    # Modelo Keras
+    model_path = os.path.join(MODELS_DIR, "emotion_model.keras")
+    model_url = f"{GITHUB_RAW_BASE}models/emotion_model.keras"
+    if not ensure_file_exists(model_path, model_url, "Modelo de Emoções"):
+        files_ok = False
+
+    # Dados de treinamento
+    training_path = os.path.join(TRAINING_DIR, "training_summary.json")
+    training_url = f"{GITHUB_RAW_BASE}training/training_summary.json"
+    if not ensure_file_exists(training_path, training_url, "Dados de Treinamento"):
+        files_ok = False
+
+    # Haar Cascade (já deve estar presente, mas verifica)
+    cascade_path = os.path.join(BASE_DIR, "haarcascade_frontalface_default.xml")
+    cascade_url = f"{GITHUB_RAW_BASE}haarcascade_frontalface_default.xml"
+    if not ensure_file_exists(cascade_path, cascade_url, "Detector de Faces"):
+        files_ok = False
+
+    return files_ok
 
 # Configuração das emoções
 EMOTIONS = {
@@ -75,18 +124,18 @@ st.markdown(
   --border: #334155;
   --shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
-.stApp {
-  background: var(--dark-bg);
-  color: var(--text);
+.stApp { 
+  background: var(--dark-bg); 
+  color: var(--text); 
 }
-.main .block-container {
-  max-width: none !important;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+.main .block-container { 
+  max-width: none !important; 
+  padding-left: 1.5rem; 
+  padding-right: 1.5rem; 
 }
 
-h1, h2, h3, h4, h5 {
-  font-family: 'Inter', sans-serif;
+h1, h2, h3, h4, h5 { 
+  font-family: 'Inter', sans-serif; 
   color: var(--text);
   font-weight: 600;
 }
@@ -97,22 +146,22 @@ h3 { font-size: 1.25rem; }
 h4 { font-size: 1rem; }
 
 /* Hero Title */
-.main-hero {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0.75rem 0 1rem;
+.main-hero { 
+  font-size: 2rem; 
+  font-weight: 700; 
+  margin: 0.75rem 0 1rem; 
   display: flex;
   align-items: center;
   gap: 0.875rem;
 }
-.title-gradient {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.title-gradient { 
+  background: linear-gradient(135deg, var(--primary), var(--accent)); 
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent; 
 }
-.subtitle {
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+.subtitle { 
+  color: var(--text-secondary); 
+  margin-bottom: 1.5rem; 
   font-size: 0.938rem;
 }
 
@@ -130,20 +179,20 @@ h4 { font-size: 1rem; }
 }
 
 /* Cards */
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: var(--shadow);
+.card { 
+  background: var(--card-bg); 
+  border: 1px solid var(--border); 
+  border-radius: 8px; 
+  padding: 1rem; 
+  box-shadow: var(--shadow); 
   margin-bottom: 0.875rem;
   font-size: 0.875rem;
 }
-.metric-card {
-  background: linear-gradient(135deg, rgba(255,107,53,0.05), rgba(247,147,30,0.05));
-  border: 1px solid rgba(255,107,53,0.15);
-  border-radius: 8px;
-  padding: 0.875rem;
+.metric-card { 
+  background: linear-gradient(135deg, rgba(255,107,53,0.05), rgba(247,147,30,0.05)); 
+  border: 1px solid rgba(255,107,53,0.15); 
+  border-radius: 8px; 
+  padding: 0.875rem; 
   text-align: center;
 }
 .metric-value {
@@ -161,27 +210,27 @@ h4 { font-size: 1rem; }
 }
 
 /* Badge */
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.625rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
+.badge { 
+  display: inline-block; 
+  padding: 0.25rem 0.625rem; 
+  border-radius: 4px; 
+  font-size: 0.75rem; 
   font-weight: 600;
   border: 1px solid;
 }
 .badge-primary {
-  background: rgba(255,107,53,0.12);
-  border-color: rgba(255,107,53,0.25);
+  background: rgba(255,107,53,0.12); 
+  border-color: rgba(255,107,53,0.25); 
   color: var(--primary);
 }
 .badge-success {
-  background: rgba(82,183,136,0.12);
-  border-color: rgba(82,183,136,0.25);
+  background: rgba(82,183,136,0.12); 
+  border-color: rgba(82,183,136,0.25); 
   color: var(--success);
 }
 .badge-danger {
-  background: rgba(230,57,70,0.12);
-  border-color: rgba(230,57,70,0.25);
+  background: rgba(230,57,70,0.12); 
+  border-color: rgba(230,57,70,0.25); 
   color: var(--danger);
 }
 
@@ -214,8 +263,8 @@ h4 { font-size: 1rem; }
   color: var(--text-secondary);
 }
 
-hr {
-  border-top: 1px solid var(--border);
+hr { 
+  border-top: 1px solid var(--border); 
   margin: 1.5rem 0;
 }
 
@@ -369,45 +418,59 @@ div[data-baseweb="notification"][kind="info"] {
 @st.cache_resource(show_spinner=False)
 def load_emotion_model():
     """Carrega o modelo de classificação de emoções faciais"""
-    model_path = os.path.join(MODELS_DIR, "emotion_model.keras")
-    if not os.path.exists(model_path):
-        st.error(f"Modelo de emoções não encontrado em {model_path}")
+    # Garante que os arquivos necessários estão disponíveis
+    if not ensure_model_files():
+        st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
         return None
+    
+    model_path = os.path.join(MODELS_DIR, "emotion_model.keras")
 
     try:
         model = keras.models.load_model(model_path)
         return model
     except Exception as e:
-        st.error(f"Erro ao carregar modelo de emoções: {str(e)}")
+        st.error(f"❌ Erro ao carregar modelo de emoções: {str(e)}")
         return None
 
 
 @st.cache_resource(show_spinner=False)
 def load_face_cascade():
     """Carrega o classificador Haar Cascade para detecção de rostos"""
-    cascade_path = os.path.join(BASE_DIR, "haarcascade_frontalface_default.xml")
-    if not os.path.exists(cascade_path):
-        st.error(f"Arquivo Haar Cascade não encontrado em {cascade_path}")
+    # Garante que os arquivos necessários estão disponíveis
+    if not ensure_model_files():
+        st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
         return None
+
+    cascade_path = os.path.join(BASE_DIR, "haarcascade_frontalface_default.xml")
 
     try:
         face_cascade = cv2.CascadeClassifier(cascade_path)
+        if face_cascade.empty():
+            st.error("❌ Erro: Haar Cascade não foi carregado corretamente.")
+            return None
         return face_cascade
     except Exception as e:
-        st.error(f"Erro ao carregar Haar Cascade: {str(e)}")
+        st.error(f"❌ Erro ao carregar Haar Cascade: {str(e)}")
         return None
 
 
 @st.cache_data(show_spinner=False)
 def load_training_data():
     """Carrega dados de treinamento do modelo de emoções"""
+    # Garante que os arquivos necessários estão disponíveis
+    if not ensure_model_files():
+        st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
+        return None
+
     summary_path = os.path.join(TRAINING_DIR, "training_summary.json")
-
     summary = None
-
+    
     if os.path.exists(summary_path):
-        with open(summary_path, "r") as f:
-            summary = json.load(f)
+        try:
+            with open(summary_path, "r") as f:
+                summary = json.load(f)
+        except Exception as e:
+            st.error(f"❌ Erro ao carregar dados de treinamento: {str(e)}")
 
     return summary
 
@@ -423,7 +486,7 @@ def get_env_status():
         device_name = "GPU Available"
     else:
         device_name = platform.processor() or "CPU"
-
+    
     return {
         "device": "GPU" if gpu_devices else "CPU",
         "device_name": device_name,
@@ -495,6 +558,10 @@ def page_Home(model, face_cascade, summary):
     )
     st.markdown('<div class="subtitle">Classificador de Emoções Faciais usando CNN e TensorFlow</div>', unsafe_allow_html=True)
 
+    # Mensagem sobre download automático de arquivos
+    if not model or not face_cascade:
+        st.info("💡 **Nota:** Os arquivos necessários (modelo, dados de treinamento e detector de faces) serão baixados automaticamente do repositório GitHub na primeira execução.")
+    
     # Status cards
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -506,7 +573,7 @@ def page_Home(model, face_cascade, summary):
   <span class="badge {badge_class}">{model_status}</span>
 </div>
 """, unsafe_allow_html=True)
-
+    
     with col2:
         face_status = "Carregado" if face_cascade else "Erro"
         badge_class = "badge-success" if face_cascade else "badge-danger"
@@ -516,7 +583,7 @@ def page_Home(model, face_cascade, summary):
   <span class="badge {badge_class}">{face_status}</span>
 </div>
 """, unsafe_allow_html=True)
-
+    
     with col3:
         if summary and 'final_metrics' in summary:
             accuracy = summary['final_metrics'].get('best_validation_accuracy', 0)
@@ -529,9 +596,9 @@ def page_Home(model, face_cascade, summary):
   <div class="metric-value">{accuracy_text}</div>
 </div>
 """, unsafe_allow_html=True)
-
+    
     st.markdown("---")
-
+    
     # Informações sobre o modelo
     if summary:
         st.markdown('<h3 style="color: var(--text); font-size: 1.125rem; margin: 1.5rem 0 0.75rem 0;">Sobre o Modelo</h3>', unsafe_allow_html=True)
@@ -562,7 +629,7 @@ def page_Home(model, face_cascade, summary):
   </div>
 </div>
 """, unsafe_allow_html=True)
-
+    
     # Como funciona
     st.markdown("---")
     st.markdown('<h3 style="color: var(--text); font-size: 1.125rem; margin: 1.5rem 0 0.75rem 0;">Como Funciona</h3>', unsafe_allow_html=True)
@@ -587,7 +654,7 @@ def page_emotion_detector(model, face_cascade):
     if model is None or face_cascade is None:
         st.error("Modelo ou detector de rosto não carregado. Verifique os arquivos necessários.")
         return
-
+    
     # Abas para diferentes métodos de input
     tab_camera, tab_upload = st.tabs(["📷 Câmera", "📁 Upload"])
 
@@ -645,7 +712,7 @@ def page_emotion_detector(model, face_cascade):
   <p style="margin-top: 1rem; color: var(--text-secondary);">{EMOTION_MESSAGES[emotion]}</p>
 </div>
 """, unsafe_allow_html=True)
-
+            
                                 # Gráfico de probabilidades
                                 prob_df = pd.DataFrame(list(prediction["probabilities"].items()),
                                                      columns=["Emoção", "Probabilidade"])
@@ -676,7 +743,7 @@ def page_emotion_detector(model, face_cascade):
                                     if st.button("📸 Tirar Outra Foto", type="primary", use_container_width=True):
                                         st.session_state.show_camera = False
                                         st.rerun()
-
+    
     with tab_upload:
         st.markdown('<h3 style="color: var(--text); font-size: 1.125rem; margin-bottom: 0.75rem;">Upload de Imagem</h3>', unsafe_allow_html=True)
 
@@ -727,8 +794,8 @@ def page_emotion_detector(model, face_cascade):
                                     )
                                 ])
                                 fig.update_layout(
-                                    plot_bgcolor='rgba(0,0,0,0)',
-                                    paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
                                     font_color='#f1f5f9',
                                     xaxis_title="Probabilidade (%)",
                                     yaxis_title="Emoção",
@@ -741,7 +808,7 @@ def page_emotion_detector(model, face_cascade):
 def page_about():
     """Página sobre"""
     st.markdown('<h2 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 1rem;">Sobre</h2>', unsafe_allow_html=True)
-
+    
     st.markdown("""
 <div class="card">
 <h3>Facial Emotion Classifier</h3>
@@ -790,7 +857,7 @@ def main():
     """Função principal"""
     with st.sidebar:
         st.markdown("<h3 style='color:#8b5cf6; margin-bottom: 0.875rem; font-size: 1.125rem;'>Navegação</h3>", unsafe_allow_html=True)
-
+        
         selected = option_menu(
             menu_title=None,
             options=["Início", "Detector", "Sobre"],
@@ -814,12 +881,12 @@ def main():
                 },
             },
         )
-
+        
         # Status do ambiente
         st.markdown("---")
         st.markdown("<h4 style='margin-bottom:0.625rem; font-size: 0.938rem;'>Sistema</h4>", unsafe_allow_html=True)
         env = get_env_status()
-
+        
         device_badge = "badge-success" if env['device'] == "GPU" else "badge-primary"
         st.markdown(f"""
 <div class="card" style="padding: 0.875rem;">
@@ -830,12 +897,12 @@ def main():
   <p style="margin: 0.2rem 0; font-size: 0.75rem;"><b>TensorFlow:</b> <span style="color: var(--text-secondary);">{env['tensorflow']}</span></p>
 </div>
 """, unsafe_allow_html=True)
-
+    
     # Carrega recursos
     model = load_emotion_model()
     face_cascade = load_face_cascade()
     summary = load_training_data()
-
+    
     # Roteamento de páginas
     if selected == "Início":
         page_Home(model, face_cascade, summary)
