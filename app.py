@@ -422,11 +422,11 @@ def load_emotion_model():
     # Garante que os arquivos necessários estão disponíveis
     if not ensure_model_files():
         st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
-        return None
-
+            return None
+    
     # Usa o modelo VGG16 com fine-tuning (70.2% de acurácia)
     model_path = os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.keras")
-
+    
     try:
         model = keras.models.load_model(model_path)
         return model
@@ -466,11 +466,11 @@ def load_training_data():
 
     summary_path = os.path.join(TRAINING_DIR, "training_summary_vgg_finetuned.json")
     summary = None
-
+    
     if os.path.exists(summary_path):
         try:
-            with open(summary_path, "r") as f:
-                summary = json.load(f)
+        with open(summary_path, "r") as f:
+            summary = json.load(f)
         except Exception as e:
             st.error(f"❌ Erro ao carregar dados de treinamento: {str(e)}")
 
@@ -697,7 +697,7 @@ def page_emotion_detector(model, face_cascade):
                             with col1:
                                 st.image(image, caption="📸 Foto Capturada", use_container_width=True)
                             with col2:
-                                st.markdown(f"""
+                st.markdown(f"""
 <div class="emotion-result">
   <span class="emotion-emoji">{EMOTION_MESSAGES[emotion].split()[0]}</span>
   <div class="emotion-text">{emotion.title()}</div>
@@ -786,7 +786,7 @@ def page_emotion_detector(model, face_cascade):
                                         marker_color=['var(--primary)' if emo == emotion else 'var(--muted)' for emo in prob_df["Emoção"]]
                                     )
                                 ])
-                                fig.update_layout(
+            fig.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
                                     font_color='#f1f5f9',
@@ -794,8 +794,8 @@ def page_emotion_detector(model, face_cascade):
                                     yaxis_title="Emoção",
                                     height=300,
                                     margin=dict(l=0, r=0, t=20, b=0)
-                                )
-                                st.plotly_chart(fig, use_container_width=True)
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
 
 def page_about():
