@@ -720,7 +720,7 @@ def page_emotion_detector(model, face_cascade):
         return
     
     # Abas para diferentes métodos de input
-    tab_camera, tab_upload = st.tabs(["📷 Câmera", "📁 Upload"])
+    tab_camera, tab_upload, tab_examples = st.tabs(["📷 Câmera", "📁 Upload", "🖼️ Exemplos"])
 
     with tab_camera:
         st.markdown('<h3 style="color: var(--text); font-size: 1.125rem; margin-bottom: 0.75rem;">Capture com a Câmera</h3>', unsafe_allow_html=True)
@@ -868,6 +868,128 @@ def page_emotion_detector(model, face_cascade):
                                 )
                                 st.plotly_chart(fig, use_container_width=True)
 
+    with tab_examples:
+        st.markdown('<h3 style="color: var(--text); font-size: 1.125rem; margin-bottom: 0.75rem;">Teste com Exemplos</h3>', unsafe_allow_html=True)
+        st.markdown('<p style="color: var(--text-secondary); font-size: 0.938rem; margin-bottom: 1.5rem;">Selecione uma imagem de exemplo para testar o modelo de classificação de emoções</p>', unsafe_allow_html=True)
+
+        # Estilo customizado para image-select ocupar mais espaço
+        st.markdown("""
+        <style>
+        .stImageSelect {
+            width: 100% !important;
+        }
+        .stImageSelect .stImage {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 200px !important;
+            object-fit: contain !important;
+        }
+        .stImageSelect .stImage img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            border-radius: 8px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # Lista de imagens disponíveis
+        images_dir = os.path.join(BASE_DIR, "images")
+        emotion_images = {
+            "😠 Raiva": "angry.jpg",
+            "🤢 Nojo": "disgust.jpg",
+            "😨 Medo": "fear.jpg",
+            "😄 Alegria": "happy.jpg",
+            "😐 Neutro": "neutral.jpg",
+            "😢 Tristeza": "sad.jpg",
+            "😲 Surpresa": "surprised.jpg"
+        }
+
+        if not os.path.exists(images_dir):
+            st.error("❌ Pasta de imagens de exemplo não encontrada!")
+            return
+
+        # Cria lista de caminhos das imagens
+        image_paths = []
+        for emotion_name, filename in emotion_images.items():
+            image_path = os.path.join(images_dir, filename)
+            if os.path.exists(image_path):
+                image_paths.append((emotion_name, image_path))
+            else:
+                st.warning(f"⚠️ Imagem não encontrada: {filename}")
+
+        if not image_paths:
+            st.error("❌ Nenhuma imagem de exemplo encontrada!")
+            return
+
+        # Usa streamlit-image-select para permitir seleção
+        selected_image_path = image_select(
+            "Selecione uma imagem para análise:",
+            images=[path for _, path in image_paths],
+            captions=[name for name, _ in image_paths],
+            use_container_width=True
+        )
+
+        if selected_image_path:
+            # Carrega e processa a imagem selecionada
+            try:
+                image = Image.open(selected_image_path)
+
+                if st.button("🔍 Analisar Emoção", type="primary", use_container_width=True):
+                    with st.spinner("Analisando emoção..."):
+                        processed_face, face_coords, error_msg = preprocess_face(image, face_cascade, model)
+
+                        if error_msg:
+                            st.error(error_msg)
+                        else:
+                            # Fazer predição
+                            prediction = predict_emotion(model, processed_face)
+
+                            if prediction:
+                                emotion = prediction["emotion"]
+                                confidence = prediction["confidence"]
+
+                                # Mostrar resultado
+                                col1, col2 = st.columns([2, 1])
+                                with col1:
+                                    st.image(image, caption="Imagem Selecionada", use_container_width=True)
+                                with col2:
+                                    st.markdown(f"""
+<div class="emotion-result">
+  <span class="emotion-emoji">{EMOTION_MESSAGES[emotion].split()[0]}</span>
+  <div class="emotion-text">{emotion.title()}</div>
+  <div class="emotion-confidence">Confiança: {confidence:.1%}</div>
+  <p style="margin-top: 1rem; color: var(--text-secondary);">{EMOTION_MESSAGES[emotion]}</p>
+</div>
+""", unsafe_allow_html=True)
+
+                                    # Gráfico de probabilidades
+                                    prob_df = pd.DataFrame(list(prediction["probabilities"].items()),
+                                                         columns=["Emoção", "Probabilidade"])
+                                    prob_df = prob_df.sort_values("Probabilidade", ascending=False)
+
+                                    fig = go.Figure(data=[
+                                        go.Bar(
+                                            x=prob_df["Probabilidade"] * 100,
+                                            y=prob_df["Emoção"],
+                                            orientation='h',
+                                            marker_color=['var(--primary)' if emo == emotion else 'var(--muted)' for emo in prob_df["Emoção"]]
+                                        )
+                                    ])
+                                    fig.update_layout(
+                                        plot_bgcolor='rgba(0,0,0,0)',
+                                        paper_bgcolor='rgba(0,0,0,0)',
+                                        font_color='#f1f5f9',
+                                        xaxis_title="Probabilidade (%)",
+                                        yaxis_title="Emoção",
+                                        height=300,
+                                        margin=dict(l=0, r=0, t=20, b=0)
+                                    )
+                                    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+            except Exception as e:
+                st.error(f"Erro ao processar imagem: {str(e)}")
+
 
 def page_about():
     """Página sobre"""
@@ -884,6 +1006,7 @@ def page_about():
   <li>Classificação de 7 emoções básicas</li>
   <li>Interface interativa com câmera ao vivo</li>
   <li>Upload de imagens personalizado</li>
+  <li>Galeria de exemplos para testes rápidos</li>
   <li>Visualizações detalhadas de probabilidades</li>
   <li>Mensagens personalizadas para cada emoção</li>
 </ul>

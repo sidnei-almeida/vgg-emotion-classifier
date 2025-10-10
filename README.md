@@ -25,7 +25,7 @@
 - 🤖 **Modelo VGG16** - Transfer Learning do ImageNet com Fine-Tuning (72.0% acurácia)
 - 📥 **Download Automático** - Modelo baixado automaticamente do GitHub LFS (169MB)
 - 👤 **Detecção Facial** - OpenCV + Haar Cascade para localização precisa de rostos
-- 📷 **Interface Interativa** - Captura via câmera e upload de imagens
+- 📷 **Interface Interativa** - Captura via câmera, upload de imagens e galeria de exemplos
 - 🎭 **7 Emoções Classificadas** - Raiva, Nojo, Medo, Alegria, Neutro, Tristeza, Surpresa
 - 📊 **Visualizações Avançadas** - Gráficos interativos com Plotly
 - 🎨 **Design Responsivo** - Tema dark premium com experiência mobile-first
@@ -76,10 +76,12 @@ Entrada (Imagem RGB) → Pré-processamento → Detecção Facial → VGG16 → 
 ### 📸 Como Usar
 
 1. **Acesse a aplicação** através do link acima
-2. **Clique em "📸 Iniciar Câmera"** na aba "Detector"
-3. **Permita acesso à câmera** no seu navegador
-4. **Aponte para seu rosto** e clique no botão de captura
-5. **Veja instantaneamente** sua emoção detectada com confiança
+2. **Navegue pelas abas:**
+   - **📷 Câmera:** Capture imagens em tempo real
+   - **📁 Upload:** Envie suas próprias imagens
+   - **🖼️ Exemplos:** Teste com imagens de exemplo pré-carregadas
+3. **Selecione uma opção** e clique em "Analisar Emoção"
+4. **Veja instantaneamente** sua emoção detectada com confiança e gráfico de probabilidades
 
 ---
 
@@ -177,6 +179,10 @@ cnn-emotion-classifier/
 │   └── emotion_model_final_vgg.h5              # Modelo VGG16 treinado (169MB via LFS)
 ├── 📂 training/
 │   └── training_summary_vgg_finetuned.json      # Métricas do modelo VGG16
+├── 📂 images/
+│   ├── angry.jpg, disgust.jpg, fear.jpg         # Imagens de exemplo para cada emoção
+│   ├── happy.jpg, neutral.jpg, sad.jpg
+│   └── surprised.jpg
 ├── 📂 notebooks/
 │   ├── 1_Data_Analysis.ipynb                    # Análise exploratória
 │   ├── 2_Model_Training.ipynb                   # CNN inicial
