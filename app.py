@@ -48,11 +48,10 @@ def ensure_model_files():
     """Garante que todos os arquivos necessários estão disponíveis"""
     files_ok = True
 
-    # Modelo VGG16 - baixa do repositório vgg-emotion-classifier (GitHub LFS)
-    model_path = os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.keras")
-    # URL especial para arquivos GitHub LFS - usa media.githubusercontent.com
-    model_url = "https://media.githubusercontent.com/media/sidnei-almeida/vgg-emotion-classifier/main/models/emotion_model_vgg_finetuned_stage2.keras"
-    if not ensure_file_exists(model_path, model_url, "Modelo VGG16 do GitHub LFS (pode levar alguns minutos, ~169MB)"):
+    # Verifica se o modelo H5 local existe (não baixa do GitHub)
+    model_path_h5 = os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5")
+    if not os.path.exists(model_path_h5):
+        st.error("❌ Modelo não encontrado")
         files_ok = False
 
     # Dados de treinamento do modelo VGG16
@@ -416,23 +415,81 @@ div[data-baseweb="notification"][kind="info"] {
 )
 
 
-@st.cache_resource(show_spinner=False)
 def load_emotion_model():
-    """Carrega o modelo de classificação de emoções faciais"""
+    """Carrega o modelo VGG16 de classificação de emoções faciais"""
     # Garante que os arquivos necessários estão disponíveis
     if not ensure_model_files():
-        st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
+        st.error("❌ Erro na inicialização")
         return None
+
+    # Configurações para lidar com problemas de compatibilidade
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Reduz logs do TensorFlow
+
+    # Usa apenas o modelo H5 local
+    model_path = os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5")
     
-    # Usa o modelo VGG16 com fine-tuning (70.2% de acurácia)
-    model_path = os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.keras")
+    if not os.path.exists(model_path):
+        st.error("❌ Modelo não encontrado")
+        return None
     
     try:
-        model = keras.models.load_model(model_path)
-        return model
+        # Carregamento silencioso - tenta diferentes métodos
+        try:
+            # Método 1: Carregamento padrão
+            model = keras.models.load_model(model_path)
+            return model
+        except Exception as e1:
+            try:
+                # Método 2: Carregamento com compile=False
+                model = keras.models.load_model(model_path, compile=False)
+                model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+                return model
+            except Exception as e2:
+                try:
+                    # Método 3: Carregamento com safe_mode=False (Keras 3.x)
+                    model = keras.models.load_model(model_path, safe_mode=False)
+                    return model
+                except Exception as e3:
+                    try:
+                        # Método 4: Carregamento com custom_objects
+                        custom_objects = {
+                            'Flatten': keras.layers.Flatten,
+                            'Dense': keras.layers.Dense,
+                            'Dropout': keras.layers.Dropout,
+                            'GlobalAveragePooling2D': keras.layers.GlobalAveragePooling2D,
+                            'GlobalMaxPooling2D': keras.layers.GlobalMaxPooling2D,
+                            'BatchNormalization': keras.layers.BatchNormalization,
+                            'ReLU': keras.layers.ReLU,
+                            'Softmax': keras.layers.Softmax,
+                        }
+                        model = keras.models.load_model(model_path, custom_objects=custom_objects, compile=False)
+                        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+                        return model
+                    except Exception as e4:
+                        return None
+
     except Exception as e:
-        st.error(f"❌ Erro ao carregar modelo de emoções: {str(e)}")
         return None
+
+def show_model_error_actions():
+    """Mostra ações para resolver problemas do modelo (fora do cache)"""
+    model_path = os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5")
+
+    st.error("❌ Modelo não carregou")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🗑️ Limpar Cache", type="secondary"):
+            st.cache_resource.clear()
+            st.rerun()
+
+    with col2:
+        if st.button("🔄 Reiniciar", type="secondary"):
+            st.rerun()
+
+    if not os.path.exists(model_path):
+        st.error("❌ Arquivo modelo não encontrado")
 
 
 @st.cache_resource(show_spinner=False)
@@ -440,7 +497,7 @@ def load_face_cascade():
     """Carrega o classificador Haar Cascade para detecção de rostos"""
     # Garante que os arquivos necessários estão disponíveis
     if not ensure_model_files():
-        st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
+        st.error("❌ Erro na inicialização")
         return None
 
     cascade_path = os.path.join(BASE_DIR, "haarcascade_frontalface_default.xml")
@@ -448,11 +505,11 @@ def load_face_cascade():
     try:
         face_cascade = cv2.CascadeClassifier(cascade_path)
         if face_cascade.empty():
-            st.error("❌ Erro: Haar Cascade não foi carregado corretamente.")
+            st.error("❌ Detector não carregado")
             return None
         return face_cascade
     except Exception as e:
-        st.error(f"❌ Erro ao carregar Haar Cascade: {str(e)}")
+        st.error("❌ Erro no detector")
         return None
 
 
@@ -461,18 +518,18 @@ def load_training_data():
     """Carrega dados de treinamento do modelo VGG16 de emoções"""
     # Garante que os arquivos necessários estão disponíveis
     if not ensure_model_files():
-        st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
+        st.error("❌ Erro na inicialização")
         return None
 
     summary_path = os.path.join(TRAINING_DIR, "training_summary_vgg_finetuned.json")
     summary = None
-    
+
     if os.path.exists(summary_path):
         try:
             with open(summary_path, "r") as f:
                 summary = json.load(f)
         except Exception as e:
-            st.error(f"❌ Erro ao carregar dados de treinamento: {str(e)}")
+            st.error("❌ Erro nos dados")
 
     return summary
 
@@ -497,17 +554,17 @@ def get_env_status():
     }
 
 
-def preprocess_face(image: Image.Image, face_cascade):
-    """Pré-processa uma imagem para classificação de emoções usando VGG16"""
+def preprocess_face(image: Image.Image, face_cascade, model=None):
+    """Pré-processa uma imagem para classificação de emoções"""
     # Converter PIL para numpy array BGR (formato esperado pelo OpenCV)
     img_bgr = np.array(image.convert("RGB"))
     img_bgr = cv2.cvtColor(img_bgr, cv2.COLOR_RGB2BGR)
 
-    # Usar a função atualizada do image_pre_processing.py para VGG16
+    # Usar a função atualizada do image_pre_processing.py
     from image_pre_processing import preprocess_for_prediction
 
     try:
-        processed_faces, coords = preprocess_for_prediction(img_bgr)
+        processed_faces, coords = preprocess_for_prediction(img_bgr, model)
 
         if len(processed_faces) == 0:
             return None, None, "Nenhum rosto detectado na imagem"
@@ -548,30 +605,30 @@ def page_Home(model, face_cascade, summary):
         </div>',
         unsafe_allow_html=True,
     )
-    st.markdown('<div class="subtitle">Classificador de Emoções Faciais usando CNN e TensorFlow</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">Classificador de Emoções Faciais usando IA</div>', unsafe_allow_html=True)
 
-    # Mensagem sobre download automático de arquivos
+    # Mensagem sobre componentes
     if not model or not face_cascade:
-        st.info("💡 **Nota:** Os arquivos necessários (modelo, dados de treinamento e detector de faces) serão baixados automaticamente do repositório GitHub na primeira execução.")
+        st.info("💡 Aplicação inicializando...")
     
     # Status cards
     col1, col2, col3 = st.columns(3)
     with col1:
-        model_status = "Carregado" if model else "Erro"
+        model_status = "OK" if model else "Erro"
         badge_class = "badge-success" if model else "badge-danger"
         st.markdown(f"""
 <div class="metric-card">
-  <p class="metric-label">Modelo CNN</p>
+  <p class="metric-label">Modelo</p>
   <span class="badge {badge_class}">{model_status}</span>
 </div>
 """, unsafe_allow_html=True)
     
     with col2:
-        face_status = "Carregado" if face_cascade else "Erro"
+        face_status = "OK" if face_cascade else "Erro"
         badge_class = "badge-success" if face_cascade else "badge-danger"
         st.markdown(f"""
 <div class="metric-card">
-  <p class="metric-label">Detector de Rosto</p>
+  <p class="metric-label">Detector</p>
   <span class="badge {badge_class}">{face_status}</span>
 </div>
 """, unsafe_allow_html=True)
@@ -581,7 +638,7 @@ def page_Home(model, face_cascade, summary):
             accuracy = summary['final_metrics'].get('best_validation_accuracy', 0)
             accuracy_text = f"{accuracy:.1%}"
         else:
-            accuracy_text = "72.4%"  # Acurácia do modelo VGG16 Final
+            accuracy_text = "72.0%"  # Acurácia do modelo VGG16 Final
         st.markdown(f"""
 <div class="metric-card">
   <p class="metric-label">Acurácia (Validação)</p>
@@ -592,7 +649,7 @@ def page_Home(model, face_cascade, summary):
     st.markdown("---")
     
     # Informações sobre o modelo
-    if summary:
+    if summary or model:
         st.markdown('<h3 style="color: var(--text); font-size: 1.125rem; margin: 1.5rem 0 0.75rem 0;">Sobre o Modelo</h3>', unsafe_allow_html=True)
 
         col1, col2 = st.columns(2)
@@ -600,7 +657,7 @@ def page_Home(model, face_cascade, summary):
             st.markdown("""
 <div class="card">
   <h4>Arquitetura</h4>
-  <p>VGG16 com Fine-Tuning</p>
+  <p><b>VGG16 com Fine-Tuning</b></p>
   <p>Transfer Learning do ImageNet</p>
   <p>Camadas finais treinadas para emoções</p>
   <p>Input: 96x96 pixels coloridos</p>
@@ -645,7 +702,7 @@ def page_emotion_detector(model, face_cascade):
     st.markdown('<p style="color: var(--text-secondary); font-size: 0.938rem; margin-bottom: 1.5rem;">Capture uma foto com sua câmera ou faça upload de uma imagem para detectar emoções faciais</p>', unsafe_allow_html=True)
 
     if model is None or face_cascade is None:
-        st.error("Modelo ou detector de rosto não carregado. Verifique os arquivos necessários.")
+        st.error("❌ Componentes não carregados")
         return
     
     # Abas para diferentes métodos de input
@@ -676,7 +733,7 @@ def page_emotion_detector(model, face_cascade):
                 image = Image.open(img_file_buffer)
 
                 with st.spinner("🔍 Detectando emoção..."):
-                    processed_face, face_coords, error_msg = preprocess_face(image, face_cascade)
+                    processed_face, face_coords, error_msg = preprocess_face(image, face_cascade, model)
 
                     if error_msg:
                         st.error(f"❌ {error_msg}")
@@ -747,7 +804,7 @@ def page_emotion_detector(model, face_cascade):
 
             if st.button("🔍 Detectar Emoção", type="primary", use_container_width=True):
                 with st.spinner("Detectando emoção..."):
-                    processed_face, face_coords, error_msg = preprocess_face(image, face_cascade)
+                    processed_face, face_coords, error_msg = preprocess_face(image, face_cascade, model)
 
                     if error_msg:
                         st.error(error_msg)
@@ -805,7 +862,7 @@ def page_about():
     st.markdown("""
 <div class="card">
 <h3>Facial Emotion Classifier</h3>
-<p>Sistema de classificação de emoções faciais usando Convolutional Neural Networks (CNN) e TensorFlow.</p>
+<p>Sistema de classificação de emoções faciais usando Inteligência Artificial e TensorFlow.</p>
 
 <h4>Características</h4>
 <ul>
@@ -830,8 +887,8 @@ def page_about():
 
 <h4>Tecnologias Utilizadas</h4>
 <ul>
-  <li><b>Modelo:</b> CNN personalizada com TensorFlow/Keras</li>
-  <li><b>Detecção de Rosto:</b> OpenCV + Haar Cascade</li>
+  <li><b>IA:</b> VGG16 com Fine-Tuning usando TensorFlow/Keras</li>
+  <li><b>Detecção:</b> OpenCV + Haar Cascade</li>
   <li><b>Interface:</b> Streamlit</li>
   <li><b>Visualização:</b> Plotly</li>
   <li><b>Processamento:</b> NumPy + PIL</li>
@@ -840,7 +897,7 @@ def page_about():
 <h4>👨‍💻 Autor</h4>
 <p>
   <b>Sidnei Almeida</b><br>
-  Desenvolvido como projeto de demonstração de CNN para classificação de emoções faciais.
+  Desenvolvido como projeto de demonstração de IA para classificação de emoções faciais.
 </p>
 </div>
 """, unsafe_allow_html=True)
@@ -893,6 +950,12 @@ def main():
     
     # Carrega recursos
     model = load_emotion_model()
+    
+    # Se o modelo falhou, mostra ações de correção
+    if model is None:
+        show_model_error_actions()
+        return
+    
     face_cascade = load_face_cascade()
     summary = load_training_data()
     

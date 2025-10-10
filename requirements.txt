@@ -1,22 +1,28 @@
 # Core dependencies (compatível com Python 3.11-3.13)
-streamlit
-numpy
-pandas
-pillow
+streamlit>=1.28.0
+numpy>=1.24.0
+pandas>=2.0.0
+pillow>=9.0.0
 
 # Machine Learning & Computer Vision (CPU Optimized for Streamlit Cloud)
 # ✅ TensorFlow CPU-only - SEM CUDA - Otimizado para Streamlit Cloud
-tensorflow-cpu
+tensorflow-cpu>=2.13.0,<2.21.0
+# ⚠️ Keras versão específica para compatibilidade com modelo VGG16
+# O modelo foi treinado no Colab com Keras 3.10.0
+keras==3.10.0
 
 # OpenCV headless para detecção de rostos
-opencv-python-headless
+opencv-python-headless>=4.8.0
 
 # Streamlit Extensions para câmera e navegação
-streamlit-image-select
-streamlit-option-menu
+streamlit-image-select>=0.3.0
+streamlit-option-menu>=0.3.0
 
 # Data Visualization
-plotly
+plotly>=5.15.0
 
 # Utilities
-python-dotenv
+python-dotenv>=1.0.0
+
+# Nota: Este arquivo foi otimizado para Streamlit Cloud
+# O modelo VGG16 requer Keras 3.10.0 exato para funcionar corretamente

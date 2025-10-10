@@ -18,11 +18,11 @@
 
 ## 🎯 Visão Geral
 
-**Facial Emotion Classifier** é uma aplicação avançada de Inteligência Artificial que utiliza **VGG16 com Fine-Tuning (Transfer Learning)** para classificação em tempo real de emoções faciais humanas. Desenvolvido com tecnologias de ponta em Computer Vision e Machine Learning, o sistema oferece uma interface interativa e intuitiva para análise emocional através de imagens, alcançando **72.4% de acurácia** no reconhecimento de 7 emoções básicas.
+**Facial Emotion Classifier** é uma aplicação avançada de Inteligência Artificial que utiliza **VGG16 com Fine-Tuning (Transfer Learning)** para classificação em tempo real de emoções faciais humanas. Desenvolvido com tecnologias de ponta em Computer Vision e Machine Learning, o sistema oferece uma interface interativa e intuitiva para análise emocional através de imagens, alcançando **72.0% de acurácia** no reconhecimento de 7 emoções básicas.
 
 ### ✨ Características Principais
 
-- 🧠 **Modelo VGG16 com Fine-Tuning** - Transfer Learning do ImageNet com 72.4% de acurácia
+- 🧠 **Modelo VGG16 com Fine-Tuning** - Transfer Learning do ImageNet com 72.0% de acurácia
 - 👤 **Detecção Facial Automática** - OpenCV + Haar Cascade para localização precisa
 - 📷 **Interface Interativa** - Captura via câmera e upload de imagens
 - 🎭 **7 Emoções Classificadas** - Raiva, Nojo, Medo, Alegria, Neutro, Tristeza, Surpresa
@@ -54,7 +54,7 @@ Entrada (Imagem RGB) → Pré-processamento → Detecção Facial → VGG16 → 
 
 | Métrica | Valor | Descrição |
 |---------|-------|-----------|
-| **Acurácia (Validação)** | 72.4% | Performance no conjunto de teste |
+| **Acurácia (Validação)** | 72.0% | Performance no conjunto de teste |
 | **Épocas de Treinamento** | 50 | Fine-tuning do VGG16 |
 | **Tamanho do Modelo** | 169MB | Modelo VGG16 completo |
 | **Tempo de Inferência** | < 1000ms | Resposta em tempo real |
@@ -280,7 +280,7 @@ model.compile(optimizer=Adam(learning_rate=1e-5),
 - **1_Data_Analysis_And_Manipulation.ipynb** - Análise exploratória detalhada do dataset FER-2013
 - **2_Model_Creation_and_Training.ipynb** - Desenvolvimento e treinamento do modelo CNN inicial (59.3% acurácia)
 - **2.1_Model_Creation_and_Training.ipynb** - Versão alternativa do modelo CNN
-- **3_VGG16_Fine_Tuning.ipynb** - Implementação de Transfer Learning com VGG16 (72.4% acurácia)
+- **3_VGG16_Fine_Tuning.ipynb** - Implementação de Transfer Learning com VGG16 (72.0% acurácia)
 - **4_VGG_Second_Tuning_Experiment.ipynb** - Experimentos adicionais de fine-tuning do VGG16
 
 Todos os notebooks incluem:

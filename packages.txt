@@ -1,0 +1,13 @@
+# Arquivo packages.txt para Streamlit Cloud
+# Lista pacotes do sistema necessários (se houver)
+
+# Para OpenCV e processamento de imagem
+libglib2.0-0
+libsm6
+libxext6
+libxrender-dev
+libgomp1
+
+# Para TensorFlow (geralmente já incluído)
+libcudnn8
+libcudnn8-dev

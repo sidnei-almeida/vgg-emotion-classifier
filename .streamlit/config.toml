@@ -1,0 +1,21 @@
+[global]
+# Configurações para Streamlit Cloud
+developmentMode = false
+
+[server]
+# Configurações do servidor para produção
+headless = true
+enableCORS = false
+enableXsrfProtection = false
+maxUploadSize = 200
+
+[browser]
+# Configurações do navegador
+gatherUsageStats = false
+
+[theme]
+# Tema personalizado (já definido no CSS do app)
+primaryColor = "#8b5cf6"
+backgroundColor = "#0f172a"
+secondaryBackgroundColor = "#1e293b"
+textColor = "#f1f5f9"

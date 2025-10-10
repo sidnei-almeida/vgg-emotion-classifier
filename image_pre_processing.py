@@ -5,13 +5,14 @@ import numpy as np
 # ou o caminho completo deve ser fornecido aqui.
 CASCADE_PATH = 'haarcascade_frontalface_default.xml'
 
-def preprocess_for_prediction(img_bgr):
+def preprocess_for_prediction(img_bgr, model=None):
     """
     Detecta um ou mais rostos em uma imagem, pré-processa cada um e os prepara
     para o modelo VGG16 de emoções.
 
     Args:
         img_bgr (np.array): A imagem no formato BGR, vinda do OpenCV (upload ou webcam).
+        model: O modelo VGG16 (não usado, mas mantido para compatibilidade).
 
     Returns:
         tuple: Uma tupla contendo (lista_de_rostos_processados, lista_de_coordenadas).
@@ -38,10 +39,11 @@ def preprocess_for_prediction(img_bgr):
     coords = []
 
     for (x, y, w, h) in faces:
+        # Pré-processamento para VGG16 (96x96x3)
         # 1. Recorta a região do rosto da imagem BGR original (colorida)
         face_roi = img_bgr[y:y+h, x:x+w]
         
-        # 2. Converte o rosto recortado de BGR para RGB (opcional, mas boa prática)
+        # 2. Converte o rosto recortado de BGR para RGB
         face_rgb = cv2.cvtColor(face_roi, cv2.COLOR_BGR2RGB)
         
         # 3. Redimensiona para o tamanho que o modelo VGG16 espera (96x96)
