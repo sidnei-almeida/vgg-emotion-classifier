@@ -48,16 +48,17 @@ def ensure_model_files():
     """Garante que todos os arquivos necessários estão disponíveis"""
     files_ok = True
 
-    # Modelo Keras
-    model_path = os.path.join(MODELS_DIR, "emotion_model.keras")
-    model_url = f"{GITHUB_RAW_BASE}models/emotion_model.keras"
-    if not ensure_file_exists(model_path, model_url, "Modelo de Emoções"):
+    # Nota: O modelo VGG16 é muito grande (169MB) para ser hospedado no GitHub
+    # Por isso, ele deve estar presente localmente na pasta models/
+    model_path = os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.keras")
+    if not os.path.exists(model_path):
+        st.error("❌ Modelo VGG16 não encontrado. Certifique-se de que o arquivo 'emotion_model_vgg_finetuned_stage2.keras' está na pasta 'models/'")
         files_ok = False
 
-    # Dados de treinamento
-    training_path = os.path.join(TRAINING_DIR, "training_summary.json")
-    training_url = f"{GITHUB_RAW_BASE}training/training_summary.json"
-    if not ensure_file_exists(training_path, training_url, "Dados de Treinamento"):
+    # Dados de treinamento do modelo VGG16
+    training_path = os.path.join(TRAINING_DIR, "training_summary_vgg_finetuned.json")
+    training_url = f"{GITHUB_RAW_BASE}models/training_summary_vgg_finetuned.json"
+    if not ensure_file_exists(training_path, training_url, "Dados de Treinamento VGG16"):
         files_ok = False
 
     # Haar Cascade (já deve estar presente, mas verifica)
@@ -422,8 +423,9 @@ def load_emotion_model():
     if not ensure_model_files():
         st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
         return None
-    
-    model_path = os.path.join(MODELS_DIR, "emotion_model.keras")
+
+    # Usa o modelo VGG16 com fine-tuning (70.2% de acurácia)
+    model_path = os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.keras")
 
     try:
         model = keras.models.load_model(model_path)
@@ -456,15 +458,15 @@ def load_face_cascade():
 
 @st.cache_data(show_spinner=False)
 def load_training_data():
-    """Carrega dados de treinamento do modelo de emoções"""
+    """Carrega dados de treinamento do modelo VGG16 de emoções"""
     # Garante que os arquivos necessários estão disponíveis
     if not ensure_model_files():
         st.error("❌ Não foi possível baixar os arquivos necessários do repositório.")
         return None
 
-    summary_path = os.path.join(TRAINING_DIR, "training_summary.json")
+    summary_path = os.path.join(TRAINING_DIR, "training_summary_vgg_finetuned.json")
     summary = None
-    
+
     if os.path.exists(summary_path):
         try:
             with open(summary_path, "r") as f:
@@ -496,35 +498,25 @@ def get_env_status():
 
 
 def preprocess_face(image: Image.Image, face_cascade):
-    """Pré-processa uma imagem para classificação de emoções"""
-    # Converter PIL para numpy array
-    img_np = np.array(image.convert("RGB"))
+    """Pré-processa uma imagem para classificação de emoções usando VGG16"""
+    # Converter PIL para numpy array BGR (formato esperado pelo OpenCV)
+    img_bgr = np.array(image.convert("RGB"))
+    img_bgr = cv2.cvtColor(img_bgr, cv2.COLOR_RGB2BGR)
 
-    # Converter para escala de cinza para detecção de rosto
-    gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
+    # Usar a função atualizada do image_pre_processing.py para VGG16
+    from image_pre_processing import preprocess_for_prediction
 
-    # Detectar rostos
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    try:
+        processed_faces, coords = preprocess_for_prediction(img_bgr)
 
-    if len(faces) == 0:
-        return None, None, "Nenhum rosto detectado na imagem"
+        if len(processed_faces) == 0:
+            return None, None, "Nenhum rosto detectado na imagem"
 
-    # Usar o primeiro rosto detectado
-    (x, y, w, h) = faces[0]
+        # Usar o primeiro rosto detectado
+        return processed_faces[0], coords[0], None
 
-    # Recortar o rosto
-    face_roi = gray[y:y+h, x:x+w]
-
-    # Redimensionar para 48x48 (tamanho esperado pelo modelo)
-    resized_face = cv2.resize(face_roi, (48, 48), interpolation=cv2.INTER_AREA)
-
-    # Normalizar pixels
-    normalized_face = resized_face / 255.0
-
-    # Expandir dimensões para formato do modelo (1, 48, 48, 1)
-    reshaped_face = np.reshape(normalized_face, (1, 48, 48, 1))
-
-    return reshaped_face, (x, y, w, h), None
+    except Exception as e:
+        return None, None, f"Erro no pré-processamento: {str(e)}"
 
 
 def predict_emotion(model, processed_face):
@@ -589,7 +581,7 @@ def page_Home(model, face_cascade, summary):
             accuracy = summary['final_metrics'].get('best_validation_accuracy', 0)
             accuracy_text = f"{accuracy:.1%}"
         else:
-            accuracy_text = "N/A"
+            accuracy_text = "72.4%"  # Acurácia do modelo VGG16 Final
         st.markdown(f"""
 <div class="metric-card">
   <p class="metric-label">Acurácia (Validação)</p>
@@ -608,9 +600,10 @@ def page_Home(model, face_cascade, summary):
             st.markdown("""
 <div class="card">
   <h4>Arquitetura</h4>
-  <p>CNN com 3 blocos convolucionais</p>
-  <p>Camadas de Batch Normalization</p>
-  <p>Dropout para regularização</p>
+  <p>VGG16 com Fine-Tuning</p>
+  <p>Transfer Learning do ImageNet</p>
+  <p>Camadas finais treinadas para emoções</p>
+  <p>Input: 96x96 pixels coloridos</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -767,10 +760,10 @@ def page_emotion_detector(model, face_cascade):
                             confidence = prediction["confidence"]
 
                             # Mostrar resultado
-                            col1, col2 = st.columns(2)
-                            with col1:
+    col1, col2 = st.columns(2)
+    with col1:
                                 st.image(image, caption="Imagem Enviada", use_container_width=True)
-                            with col2:
+    with col2:
                                 st.markdown(f"""
 <div class="emotion-result">
   <span class="emotion-emoji">{EMOTION_MESSAGES[emotion].split()[0]}</span>

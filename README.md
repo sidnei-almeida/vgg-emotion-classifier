@@ -18,11 +18,11 @@
 
 ## 🎯 Visão Geral
 
-**Facial Emotion Classifier** é uma aplicação avançada de Inteligência Artificial que utiliza **Convolutional Neural Networks (CNN)** para classificação em tempo real de emoções faciais humanas. Desenvolvido com tecnologias de ponta em Computer Vision e Machine Learning, o sistema oferece uma interface interativa e intuitiva para análise emocional através de imagens.
+**Facial Emotion Classifier** é uma aplicação avançada de Inteligência Artificial que utiliza **VGG16 com Fine-Tuning (Transfer Learning)** para classificação em tempo real de emoções faciais humanas. Desenvolvido com tecnologias de ponta em Computer Vision e Machine Learning, o sistema oferece uma interface interativa e intuitiva para análise emocional através de imagens, alcançando **72.4% de acurácia** no reconhecimento de 7 emoções básicas.
 
 ### ✨ Características Principais
 
-- 🧠 **Modelo CNN Otimizado** - Arquitetura personalizada com 59.3% de acurácia
+- 🧠 **Modelo VGG16 com Fine-Tuning** - Transfer Learning do ImageNet com 72.4% de acurácia
 - 👤 **Detecção Facial Automática** - OpenCV + Haar Cascade para localização precisa
 - 📷 **Interface Interativa** - Captura via câmera e upload de imagens
 - 🎭 **7 Emoções Classificadas** - Raiva, Nojo, Medo, Alegria, Neutro, Tristeza, Surpresa
@@ -36,27 +36,28 @@
 ### 🧬 Modelo de Inteligência Artificial
 
 ```
-Entrada (Imagem RGB) → Pré-processamento → Detecção Facial → CNN → Classificação → Visualização
+Entrada (Imagem RGB) → Pré-processamento → Detecção Facial → VGG16 → Classificação → Visualização
      ↓                     ↓                ↓           ↓         ↓            ↓
-   Upload/Câmera     OpenCV + Haar    Redimensionamento    3 Camadas     Softmax    Interface
-                     Cascade          (48x48px)        Convolucionais   (7 classes)  Interativa
+   Upload/Câmera     OpenCV + Haar    Redimensionamento    16 Camadas    Softmax    Interface
+                     Cascade          (96x96px)        Convolucionais   (7 classes)  Interativa
 ```
 
 **Especificações Técnicas:**
 - **Framework:** TensorFlow 2.20 (CPU-optimized)
-- **Arquitetura:** CNN Sequencial com 3 blocos convolucionais
-- **Camadas:** Conv2D → BatchNorm → MaxPool → Dropout
-- **Otimizador:** Adam com learning rate adaptativo
+- **Arquitetura:** VGG16 com Fine-Tuning (Transfer Learning)
+- **Base:** ImageNet pré-treinado (16 camadas convolucionais)
+- **Fine-Tuning:** Últimas camadas treinadas para emoções
+- **Otimizador:** Adam com learning rate 1e-05
 - **Dataset:** FER-2013 (35.887 imagens de treinamento)
 
 ### 📊 Métricas de Performance
 
 | Métrica | Valor | Descrição |
 |---------|-------|-----------|
-| **Acurácia (Validação)** | 59.3% | Performance no conjunto de teste |
-| **Épocas de Treinamento** | 51 | Early stopping automático |
-| **Tamanho do Modelo** | 1.2MB | Otimizado para deploy |
-| **Tempo de Inferência** | < 500ms | Resposta em tempo real |
+| **Acurácia (Validação)** | 72.4% | Performance no conjunto de teste |
+| **Épocas de Treinamento** | 50 | Fine-tuning do VGG16 |
+| **Tamanho do Modelo** | 169MB | Modelo VGG16 completo |
+| **Tempo de Inferência** | < 1000ms | Resposta em tempo real |
 
 ---
 
@@ -86,6 +87,7 @@ Entrada (Imagem RGB) → Pré-processamento → Detecção Facial → CNN → Cl
 
 - **Python** 3.11+
 - **Git** para controle de versão
+- **Git LFS** para arquivos grandes (modelo 169MB)
 - **Câmera** (opcional, para captura ao vivo)
 
 ### Instalação Rápida
@@ -107,6 +109,32 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
+### 🔧 Configuração do Git LFS (Para Desenvolvedores)
+
+**Para fazer upload do modelo grande (169MB) para o GitHub:**
+
+```bash
+# 1. Instalar Git LFS (se não tiver)
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install git-lfs
+
+# 2. Inicializar LFS no repositório
+git lfs install
+
+# 3. Rastrear arquivos grandes
+git lfs track "*.keras"
+git lfs track "models/emotion_model_vgg_finetuned_stage2.keras"
+
+# 4. Adicionar e commit os arquivos
+git add .gitattributes models/emotion_model_vgg_finetuned_stage2.keras
+git commit -m "Adiciona modelo VGG16 com Git LFS"
+
+# 5. Fazer push (irá usar LFS automaticamente)
+git push origin main
+```
+
+**Nota:** O arquivo `.gitattributes` já está configurado para rastrear arquivos `.keras` com Git LFS.
+
 ### 📋 Dependências Principais
 
 ```txt
@@ -123,9 +151,11 @@ pandas                     # Manipulação de Dados
 **Para usuários finais:** A aplicação baixa automaticamente os arquivos necessários (modelo treinado, dados de treinamento e detector de faces) do repositório GitHub na primeira execução. Não é necessário ter o código fonte localmente!
 
 **Arquivos baixados automaticamente:**
-- `models/emotion_model.keras` - Modelo CNN treinado (1.2MB)
-- `training/training_summary.json` - Métricas de treinamento
+- `models/emotion_model_vgg_finetuned_stage2.keras` - Modelo VGG16 treinado (169MB) ⚠️
+- `training/training_summary_vgg_finetuned.json` - Métricas de treinamento
 - `haarcascade_frontalface_default.xml` - Detector facial OpenCV
+
+> **⚠️ Importante:** O modelo VGG16 (169MB) é muito grande para ser hospedado no GitHub comum. Ele deve ser adicionado usando **Git LFS** ou hospedado externamente.
 
 ### 🔧 Configuração de Desenvolvimento
 
@@ -142,19 +172,21 @@ pip install tensorflow[and-cuda]
 ```
 cnn-emotion-classifier/
 ├── 📂 models/
-│   └── emotion_model.keras          # Modelo CNN treinado
+│   └── emotion_model_vgg_finetuned_stage2.keras  # Modelo VGG16 treinado (169MB)
 ├── 📂 training/
-│   └── training_summary.json        # Métricas de treinamento
+│   └── training_summary_vgg_finetuned.json      # Métricas do modelo VGG16
 ├── 📂 notebooks/
-│   ├── 1_Data_Analysis.ipynb        # Análise exploratória
-│   └── 2_Model_Training.ipynb       # Processo de treinamento
+│   ├── 1_Data_Analysis.ipynb                    # Análise exploratória
+│   ├── 2_Model_Training.ipynb                   # CNN inicial
+│   ├── 3_VGG16_Fine_Tuning.ipynb               # Transfer Learning VGG16
+│   └── 4_VGG_Second_Tuning_Experiment.ipynb    # Experimento adicional
 ├── 📂 src/
-│   ├── app.py                       # Aplicação principal
-│   ├── image_preprocessing.py       # Pré-processamento facial
-│   └── haarcascade_frontalface_default.xml  # Detector Haar
-├── 📄 requirements.txt              # Dependências
-├── 📄 README.md                     # Documentação
-└── 📄 LICENSE                       # Licença MIT
+│   ├── app.py                                   # Aplicação principal
+│   ├── image_preprocessing.py                   # Pré-processamento VGG16 (96x96px)
+│   └── haarcascade_frontalface_default.xml      # Detector Haar
+├── 📄 requirements.txt                          # Dependências
+├── 📄 README.md                                 # Documentação
+└── 📄 LICENSE                                   # Licença MIT
 ```
 
 ---
@@ -177,33 +209,30 @@ cnn-emotion-classifier/
 
 ### 🤖 Arquitetura da Rede Neural
 
+**Modelo VGG16 com Fine-Tuning:**
 ```python
+# Base VGG16 pré-treinada no ImageNet (16 camadas convolucionais)
+base_model = VGG16(weights='imagenet', include_top=False, input_shape=(96, 96, 3))
+
+# Congelar as camadas base (exceto as últimas)
+for layer in base_model.layers[:-4]:
+    layer.trainable = False
+
+# Adicionar camadas personalizadas para classificação de emoções
 model = Sequential([
-    # Bloco 1: Extração de características básicas
-    Conv2D(32, (3,3), padding='same', activation='relu', input_shape=(48, 48, 1)),
-    BatchNormalization(),
-    MaxPooling2D(pool_size=(2,2)),
-    Dropout(0.2),
-
-    # Bloco 2: Características intermediárias
-    Conv2D(64, (3,3), padding='same', activation='relu'),
-    BatchNormalization(),
-    MaxPooling2D(pool_size=(2,2)),
-    Dropout(0.3),
-
-    # Bloco 3: Características avançadas
-    Conv2D(128, (3,3), padding='same', activation='relu'),
-    BatchNormalization(),
-    MaxPooling2D(pool_size=(2,2)),
-    Dropout(0.4),
-
-    # Classificação final
+    base_model,
     Flatten(),
-    Dense(128, activation='relu'),
-    BatchNormalization(),
+    Dense(256, activation='relu'),
     Dropout(0.5),
-    Dense(7, activation='softmax')
+    Dense(128, activation='relu'),
+    Dropout(0.3),
+    Dense(7, activation='softmax')  # 7 classes de emoções
 ])
+
+# Compilar com learning rate baixo para fine-tuning
+model.compile(optimizer=Adam(learning_rate=1e-5),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 ```
 
 ### 🔍 Processo de Detecção
@@ -211,10 +240,10 @@ model = Sequential([
 1. **Captura de Imagem** - RGB via câmera ou upload
 2. **Conversão para Cinza** - Otimização para detecção facial
 3. **Haar Cascade** - Localização do rosto (OpenCV)
-4. **Recorte Facial** - Extração da região de interesse
-5. **Redimensionamento** - 48x48 pixels para entrada da CNN
+4. **Recorte Facial** - Extração da região de interesse (colorida)
+5. **Redimensionamento** - 96x96 pixels para entrada do VGG16
 6. **Normalização** - Valores [0,1] para melhor convergência
-7. **Predição** - Classificação em tempo real
+7. **Predição** - Classificação usando modelo VGG16 fine-tuned
 8. **Visualização** - Interface responsiva com resultados
 
 ---
@@ -244,6 +273,21 @@ model = Sequential([
 - ✅ **Documentação atualizada** para mudanças significativas
 - ✅ **Código limpo** seguindo PEP 8
 - ✅ **Issues bem descritas** antes de implementar
+
+### 📓 Notebooks de Desenvolvimento
+
+**Jupyter Notebooks disponíveis:**
+- **1_Data_Analysis_And_Manipulation.ipynb** - Análise exploratória detalhada do dataset FER-2013
+- **2_Model_Creation_and_Training.ipynb** - Desenvolvimento e treinamento do modelo CNN inicial (59.3% acurácia)
+- **2.1_Model_Creation_and_Training.ipynb** - Versão alternativa do modelo CNN
+- **3_VGG16_Fine_Tuning.ipynb** - Implementação de Transfer Learning com VGG16 (72.4% acurácia)
+- **4_VGG_Second_Tuning_Experiment.ipynb** - Experimentos adicionais de fine-tuning do VGG16
+
+Todos os notebooks incluem:
+- 📊 Visualizações detalhadas do treinamento
+- 📈 Gráficos de acurácia e perda
+- 🔍 Análise de over fitting e under fitting
+- 📋 Métricas de performance completas
 
 ### 🐛 Reportar Bugs
 
