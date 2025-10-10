@@ -20,14 +20,16 @@
 
 **Facial Emotion Classifier** é uma aplicação avançada de Inteligência Artificial que utiliza **VGG16 com Fine-Tuning (Transfer Learning)** para classificação em tempo real de emoções faciais humanas. Desenvolvido com tecnologias de ponta em Computer Vision e Machine Learning, o sistema oferece uma interface interativa e intuitiva para análise emocional através de imagens, alcançando **72.0% de acurácia** no reconhecimento de 7 emoções básicas.
 
-### ✨ Características Principais
+### 🚀 Características Principais
 
-- 🧠 **Modelo VGG16 com Fine-Tuning** - Transfer Learning do ImageNet com 72.0% de acurácia
-- 👤 **Detecção Facial Automática** - OpenCV + Haar Cascade para localização precisa
+- 🤖 **Modelo VGG16** - Transfer Learning do ImageNet com Fine-Tuning (72.0% acurácia)
+- 📥 **Download Automático** - Modelo baixado automaticamente do GitHub LFS (169MB)
+- 👤 **Detecção Facial** - OpenCV + Haar Cascade para localização precisa de rostos
 - 📷 **Interface Interativa** - Captura via câmera e upload de imagens
 - 🎭 **7 Emoções Classificadas** - Raiva, Nojo, Medo, Alegria, Neutro, Tristeza, Surpresa
 - 📊 **Visualizações Avançadas** - Gráficos interativos com Plotly
 - 🎨 **Design Responsivo** - Tema dark premium com experiência mobile-first
+
 
 ---
 
@@ -148,14 +150,14 @@ pandas                     # Manipulação de Dados
 
 ### 🔗 Sistema de Auto-Download
 
-**Para usuários finais:** A aplicação baixa automaticamente os arquivos necessários (modelo treinado, dados de treinamento e detector de faces) do repositório GitHub na primeira execução. Não é necessário ter o código fonte localmente!
+**Para usuários finais:** A aplicação baixa automaticamente os arquivos necessários (modelo treinado, dados de treinamento e detector de faces) do repositório GitHub na primeira execução usando **Git LFS**. Não é necessário ter o código fonte localmente!
 
 **Arquivos baixados automaticamente:**
-- `models/emotion_model_vgg_finetuned_stage2.keras` - Modelo VGG16 treinado (169MB) ⚠️
+- `models/emotion_model_final_vgg.h5` - Modelo VGG16 treinado (169MB) via Git LFS ✅
 - `training/training_summary_vgg_finetuned.json` - Métricas de treinamento
 - `haarcascade_frontalface_default.xml` - Detector facial OpenCV
 
-> **⚠️ Importante:** O modelo VGG16 (169MB) é muito grande para ser hospedado no GitHub comum. Ele deve ser adicionado usando **Git LFS** ou hospedado externamente.
+> **✅ Resolvido:** O modelo VGG16 (169MB) agora é hospedado no GitHub usando **Git LFS** e baixado automaticamente na primeira execução.
 
 ### 🔧 Configuração de Desenvolvimento
 
@@ -172,7 +174,7 @@ pip install tensorflow[and-cuda]
 ```
 cnn-emotion-classifier/
 ├── 📂 models/
-│   └── emotion_model_vgg_finetuned_stage2.keras  # Modelo VGG16 treinado (169MB)
+│   └── emotion_model_final_vgg.h5              # Modelo VGG16 treinado (169MB via LFS)
 ├── 📂 training/
 │   └── training_summary_vgg_finetuned.json      # Métricas do modelo VGG16
 ├── 📂 notebooks/
@@ -180,11 +182,10 @@ cnn-emotion-classifier/
 │   ├── 2_Model_Training.ipynb                   # CNN inicial
 │   ├── 3_VGG16_Fine_Tuning.ipynb               # Transfer Learning VGG16
 │   └── 4_VGG_Second_Tuning_Experiment.ipynb    # Experimento adicional
-├── 📂 src/
-│   ├── app.py                                   # Aplicação principal
-│   ├── image_preprocessing.py                   # Pré-processamento VGG16 (96x96px)
-│   └── haarcascade_frontalface_default.xml      # Detector Haar
-├── 📄 requirements.txt                          # Dependências
+├── 📄 app.py                                   # Aplicação principal
+├── 📄 image_pre_processing.py                   # Pré-processamento VGG16 (96x96px)
+├── 📄 haarcascade_frontalface_default.xml      # Detector Haar
+├── 📄 requirements.txt                          # Dependências (Keras 3.10.0)
 ├── 📄 README.md                                 # Documentação
 └── 📄 LICENSE                                   # Licença MIT
 ```

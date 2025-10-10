@@ -48,10 +48,10 @@ def ensure_model_files():
     """Garante que todos os arquivos necessários estão disponíveis"""
     files_ok = True
 
-    # Verifica se o modelo H5 local existe (não baixa do GitHub)
+    # Modelo VGG16 H5 - baixa do GitHub LFS se não existir
     model_path_h5 = os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5")
-    if not os.path.exists(model_path_h5):
-        st.error("❌ Modelo não encontrado")
+    model_url_h5 = "https://media.githubusercontent.com/media/sidnei-almeida/vgg-emotion-classifier/main/models/emotion_model_final_vgg.h5"
+    if not ensure_file_exists(model_path_h5, model_url_h5, "Modelo VGG16 H5 do GitHub LFS (pode levar alguns minutos, ~169MB)"):
         files_ok = False
 
     # Dados de treinamento do modelo VGG16
@@ -426,55 +426,63 @@ def load_emotion_model():
     import os
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Reduz logs do TensorFlow
 
-    # Usa apenas o modelo H5 local
-    model_path = os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5")
-    
-    if not os.path.exists(model_path):
-        st.error("❌ Modelo não encontrado")
-        return None
-    
-    try:
-        # Carregamento silencioso - tenta diferentes métodos
-        try:
-            # Método 1: Carregamento padrão
-            model = keras.models.load_model(model_path)
-            return model
-        except Exception as e1:
+    # Tenta diferentes formatos do modelo VGG16
+    model_paths = [
+        os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5"),
+        os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.h5"),
+        os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.keras")
+    ]
+
+    for model_path in model_paths:
+        if os.path.exists(model_path):
             try:
-                # Método 2: Carregamento com compile=False
-                model = keras.models.load_model(model_path, compile=False)
-                model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-                return model
-            except Exception as e2:
+                # Carregamento silencioso - tenta diferentes métodos
                 try:
-                    # Método 3: Carregamento com safe_mode=False (Keras 3.x)
-                    model = keras.models.load_model(model_path, safe_mode=False)
+                    # Método 1: Carregamento padrão
+                    model = keras.models.load_model(model_path)
                     return model
-                except Exception as e3:
+                except Exception as e1:
                     try:
-                        # Método 4: Carregamento com custom_objects
-                        custom_objects = {
-                            'Flatten': keras.layers.Flatten,
-                            'Dense': keras.layers.Dense,
-                            'Dropout': keras.layers.Dropout,
-                            'GlobalAveragePooling2D': keras.layers.GlobalAveragePooling2D,
-                            'GlobalMaxPooling2D': keras.layers.GlobalMaxPooling2D,
-                            'BatchNormalization': keras.layers.BatchNormalization,
-                            'ReLU': keras.layers.ReLU,
-                            'Softmax': keras.layers.Softmax,
-                        }
-                        model = keras.models.load_model(model_path, custom_objects=custom_objects, compile=False)
+                        # Método 2: Carregamento com compile=False
+                        model = keras.models.load_model(model_path, compile=False)
                         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
                         return model
-                    except Exception as e4:
-                        return None
+                    except Exception as e2:
+                        try:
+                            # Método 3: Carregamento com safe_mode=False (Keras 3.x)
+                            model = keras.models.load_model(model_path, safe_mode=False)
+                            return model
+                        except Exception as e3:
+                            try:
+                                # Método 4: Carregamento com custom_objects
+                                custom_objects = {
+                                    'Flatten': keras.layers.Flatten,
+                                    'Dense': keras.layers.Dense,
+                                    'Dropout': keras.layers.Dropout,
+                                    'GlobalAveragePooling2D': keras.layers.GlobalAveragePooling2D,
+                                    'GlobalMaxPooling2D': keras.layers.GlobalMaxPooling2D,
+                                    'BatchNormalization': keras.layers.BatchNormalization,
+                                    'ReLU': keras.layers.ReLU,
+                                    'Softmax': keras.layers.Softmax,
+                                }
+                                model = keras.models.load_model(model_path, custom_objects=custom_objects, compile=False)
+                                model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+                                return model
+                            except Exception as e4:
+                                continue
 
-    except Exception as e:
-        return None
+            except Exception as e:
+                continue
+
+    return None
 
 def show_model_error_actions():
     """Mostra ações para resolver problemas do modelo (fora do cache)"""
-    model_path = os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5")
+    model_paths = [
+        os.path.join(MODELS_DIR, "emotion_model_final_vgg.h5"),
+        os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.h5"),
+        os.path.join(MODELS_DIR, "emotion_model_vgg_finetuned_stage2.keras")
+    ]
 
     st.error("❌ Modelo não carregou")
 
@@ -488,8 +496,14 @@ def show_model_error_actions():
         if st.button("🔄 Reiniciar", type="secondary"):
             st.rerun()
 
-    if not os.path.exists(model_path):
-        st.error("❌ Arquivo modelo não encontrado")
+    # Verifica quais arquivos existem
+    found_files = [path for path in model_paths if os.path.exists(path)]
+    if found_files:
+        for path in found_files:
+            file_size = os.path.getsize(path)
+            st.info(f"📁 {os.path.basename(path)}: {file_size:,} bytes ({file_size/1024/1024:.1f} MB)")
+    else:
+        st.error("❌ Nenhum arquivo de modelo encontrado na pasta models/")
 
 
 @st.cache_resource(show_spinner=False)
