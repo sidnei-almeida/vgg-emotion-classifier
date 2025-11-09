@@ -1,6 +1,2 @@
-# Hugging Face Spaces configuration
-# This file configures the Space to use Docker
-
-image: python:3.11-slim
+# Hugging Face Spaces configuration for Docker
 sdk: docker
-

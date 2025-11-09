@@ -1,3 +1,14 @@
+---
+title: Facial Emotion Classifier API
+emoji: 😊
+colorFrom: purple
+colorTo: cyan
+sdk: docker
+app_file: Dockerfile
+pinned: false
+license: mit
+---
+
 # 🤖 Facial Emotion Classifier
 
 <div align="center">
