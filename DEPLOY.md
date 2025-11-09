@@ -62,7 +62,7 @@ From the project directory to the Space directory:
 # Main files
 cp ../vgg-emotion-classifier/api.py .
 cp ../vgg-emotion-classifier/Dockerfile .
-cp ../vgg-emotion-classifier/requirements-api.txt requirements.txt
+cp ../vgg-emotion-classifier/requirements.txt requirements.txt
 cp ../vgg-emotion-classifier/app.yaml .
 cp ../vgg-emotion-classifier/image_pre_processing.py .
 cp ../vgg-emotion-classifier/haarcascade_frontalface_default.xml .
@@ -95,7 +95,7 @@ Make sure these files are in the Space:
 vgg16-emotion-classifier/
 ├── api.py                          # ✅ FastAPI application
 ├── Dockerfile                      # ✅ Docker configuration
-├── requirements.txt                # ✅ Dependencies (renamed from requirements-api.txt)
+├── requirements.txt                # ✅ Dependencies
 ├── app.yaml                       # ✅ Hugging Face config
 ├── image_pre_processing.py        # ✅ Preprocessing
 ├── haarcascade_frontalface_default.xml  # ✅ Face detector

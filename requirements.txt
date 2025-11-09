@@ -1,3 +1,8 @@
+# FastAPI and server
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
 # Core dependencies (compatible with Python 3.11-3.13)
 numpy>=1.24.0
 pandas>=2.0.0
@@ -15,7 +20,7 @@ opencv-python-headless>=4.8.0
 
 # Utilities
 python-dotenv>=1.0.0
+pydantic>=2.0.0
 
-# Note: This file contains basic project dependencies
-# For FastAPI API, use requirements-api.txt
+# Note: This file contains all project dependencies
 # The VGG16 model requires exact Keras 3.10.0 to work correctly

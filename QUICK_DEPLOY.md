@@ -17,7 +17,7 @@ From the project directory (`vgg-emotion-classifier`) to the Space directory:
 # Essential files
 cp ../vgg-emotion-classifier/api.py .
 cp ../vgg-emotion-classifier/Dockerfile .
-cp ../vgg-emotion-classifier/requirements-api.txt requirements.txt
+cp ../vgg-emotion-classifier/requirements.txt requirements.txt
 cp ../vgg-emotion-classifier/app.yaml .
 cp ../vgg-emotion-classifier/image_pre_processing.py .
 cp ../vgg-emotion-classifier/haarcascade_frontalface_default.xml .

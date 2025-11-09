@@ -18,7 +18,7 @@ This API is configured for deployment on Hugging Face Spaces using Docker.
 .
 ├── api.py                 # Main FastAPI application
 ├── Dockerfile            # Docker configuration
-├── requirements-api.txt  # Python dependencies
+├── requirements.txt      # Python dependencies
 ├── app.yaml              # Hugging Face Spaces configuration
 ├── image_pre_processing.py
 ├── haarcascade_frontalface_default.xml
@@ -157,7 +157,7 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate  # Windows
 
 # Install dependencies
-pip install -r requirements-api.txt
+pip install -r requirements.txt
 ```
 
 ### Run Locally

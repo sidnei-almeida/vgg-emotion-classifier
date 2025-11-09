@@ -34,7 +34,7 @@ echo "📋 Checking required files..."
 REQUIRED_FILES=(
     "api.py"
     "Dockerfile"
-    "requirements-api.txt"
+    "requirements.txt"
     "app.yaml"
     "image_pre_processing.py"
     "haarcascade_frontalface_default.xml"
@@ -65,7 +65,7 @@ fi
 
 # Add files to git
 echo "📝 Adding files to git..."
-git add api.py Dockerfile requirements-api.txt app.yaml image_pre_processing.py
+git add api.py Dockerfile requirements.txt app.yaml image_pre_processing.py
 git add haarcascade_frontalface_default.xml
 
 # Add models if they exist

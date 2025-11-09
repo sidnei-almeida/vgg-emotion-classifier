@@ -124,8 +124,8 @@ python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # venv\Scripts\activate   # Windows
 
-# 3. Install API dependencies
-pip install -r requirements-api.txt
+# 3. Install dependencies
+pip install -r requirements.txt
 
 # 4. Run the API
 uvicorn api:app --reload --host 0.0.0.0 --port 8000
@@ -226,7 +226,7 @@ cnn-emotion-classifier/
 ├── 📄 image_pre_processing.py                   # VGG16 preprocessing (96x96px)
 ├── 📄 haarcascade_frontalface_default.xml        # Haar detector
 ├── 📄 Dockerfile                                # Docker configuration
-├── 📄 requirements-api.txt                      # API dependencies
+├── 📄 requirements.txt                           # Dependencies
 ├── 📄 app.yaml                                  # Hugging Face Spaces configuration
 ├── 📄 test_api.py                               # API test script
 ├── 📄 README.md                                 # Main documentation
