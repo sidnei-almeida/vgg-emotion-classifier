@@ -4,228 +4,266 @@
 
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.20-FF6F00?logo=tensorflow)](https://tensorflow.org)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28-FF4B4B?logo=streamlit)](https://streamlit.io)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.12-5C3EE8?logo=opencv)](https://opencv.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Deep Learning Application for Real-Time Facial Emotion Recognition**
+**REST API for Real-Time Facial Emotion Recognition using Deep Learning**
 
-[📖 Documentação](#-documentação) • [🚀 Demonstração](#-demonstração-online) • [💻 Instalação](#-instalação) • [👥 Autor](#-autor)
+[📖 Documentation](#-documentation) • [🚀 API](#-api-rest) • [💻 Installation](#-installation) • [👥 Author](#-author)
 
 </div>
 
 ---
 
-## 🎯 Visão Geral
+## 🎯 Overview
 
-**Facial Emotion Classifier** é uma aplicação avançada de Inteligência Artificial que utiliza **VGG16 com Fine-Tuning (Transfer Learning)** para classificação em tempo real de emoções faciais humanas. Desenvolvido com tecnologias de ponta em Computer Vision e Machine Learning, o sistema oferece uma interface interativa e intuitiva para análise emocional através de imagens, alcançando **72.0% de acurácia** no reconhecimento de 7 emoções básicas.
+**Facial Emotion Classifier API** is an advanced Artificial Intelligence REST API that uses **VGG16 with Fine-Tuning (Transfer Learning)** for human facial emotion classification. Developed with cutting-edge Computer Vision and Machine Learning technologies, the API provides RESTful endpoints for emotional analysis through images, achieving **72.0% accuracy** in recognizing 7 basic emotions.
 
-### 🚀 Características Principais
+### 🚀 Key Features
 
-- 🤖 **Modelo VGG16** - Transfer Learning do ImageNet com Fine-Tuning (72.0% acurácia)
-- 📥 **Download Automático** - Modelo baixado automaticamente do GitHub LFS (169MB)
-- 👤 **Detecção Facial** - OpenCV + Haar Cascade para localização precisa de rostos
-- 📷 **Interface Interativa** - Captura via câmera, upload de imagens e galeria de exemplos
-- 🎭 **7 Emoções Classificadas** - Raiva, Nojo, Medo, Alegria, Neutro, Tristeza, Surpresa
-- 📊 **Visualizações Avançadas** - Gráficos interativos com Plotly
-- 🎨 **Design Responsivo** - Tema dark premium com experiência mobile-first
-
+- 🤖 **VGG16 Model** - ImageNet Transfer Learning with Fine-Tuning (72.0% accuracy)
+- 🔌 **REST API** - FastAPI with automatic Swagger documentation
+- 👤 **Face Detection** - OpenCV + Haar Cascade for precise face localization
+- 🐳 **Dockerized** - Production-ready for deployment (Hugging Face Spaces)
+- 🎭 **7 Emotions Classified** - Angry, Disgust, Fear, Happy, Neutral, Sad, Surprise
+- 📦 **Batch Processing** - Support for processing multiple images
+- ⚡ **High Performance** - Real-time response (< 1000ms)
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## 🏗️ System Architecture
 
-### 🧬 Modelo de Inteligência Artificial
+### 🧬 Artificial Intelligence Model
 
 ```
-Entrada (Imagem RGB) → Pré-processamento → Detecção Facial → VGG16 → Classificação → Visualização
+Input (RGB Image) → Preprocessing → Face Detection → VGG16 → Classification → JSON Response
      ↓                     ↓                ↓           ↓         ↓            ↓
-   Upload/Câmera     OpenCV + Haar    Redimensionamento    16 Camadas    Softmax    Interface
-                     Cascade          (96x96px)        Convolucionais   (7 classes)  Interativa
+   HTTP POST         OpenCV + Haar    Resize         16 Conv    Softmax    API Response
+                     Cascade          (96x96px)       Layers    (7 classes)  (JSON)
 ```
 
-**Especificações Técnicas:**
+**Technical Specifications:**
 - **Framework:** TensorFlow 2.20 (CPU-optimized)
-- **Arquitetura:** VGG16 com Fine-Tuning (Transfer Learning)
-- **Base:** ImageNet pré-treinado (16 camadas convolucionais)
-- **Fine-Tuning:** Últimas camadas treinadas para emoções
-- **Otimizador:** Adam com learning rate 1e-05
-- **Dataset:** FER-2013 (35.887 imagens de treinamento)
+- **Architecture:** VGG16 with Fine-Tuning (Transfer Learning)
+- **Base:** ImageNet pre-trained (16 convolutional layers)
+- **Fine-Tuning:** Last layers trained for emotions
+- **Optimizer:** Adam with learning rate 1e-05
+- **Dataset:** FER-2013 (35,887 training images)
 
-### 📊 Métricas de Performance
+### 📊 Performance Metrics
 
-| Métrica | Valor | Descrição |
-|---------|-------|-----------|
-| **Acurácia (Validação)** | 72.0% | Performance no conjunto de teste |
-| **Épocas de Treinamento** | 50 | Fine-tuning do VGG16 |
-| **Tamanho do Modelo** | 169MB | Modelo VGG16 completo |
-| **Tempo de Inferência** | < 1000ms | Resposta em tempo real |
+| Metric | Value | Description |
+|--------|-------|-------------|
+| **Accuracy (Validation)** | 72.0% | Performance on test set |
+| **Training Epochs** | 50 | VGG16 fine-tuning |
+| **Model Size** | 169MB | Complete VGG16 model |
+| **Inference Time** | < 1000ms | Real-time response |
 
 ---
 
-## 🚀 Demonstração Online
+## 🚀 API REST
 
 <div align="center">
 
-**[🎭 ACESSAR APLICATIVO](https://facial-emotion-classifier.streamlit.app)**
+**[🔌 Complete API Documentation](README_API.md)**
 
-[![Demo](https://img.shields.io/badge/Live_Demo-Streamlit-brightgreen?style=for-the-badge&logo=streamlit)](https://facial-emotion-classifier.streamlit.app)
+[![API](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi)](README_API.md)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)](README_API.md)
 
 </div>
 
-### 📸 Como Usar
+### 📡 Available Endpoints
 
-1. **Acesse a aplicação** através do link acima
-2. **Navegue pelas abas:**
-   - **📷 Câmera:** Capture imagens em tempo real
-   - **📁 Upload:** Envie suas próprias imagens
-   - **🖼️ Exemplos:** Teste com imagens de exemplo pré-carregadas
-3. **Selecione uma opção** e clique em "Analisar Emoção"
-4. **Veja instantaneamente** sua emoção detectada com confiança e gráfico de probabilidades
+- `GET /` - API information
+- `GET /health` - Health check and model status
+- `POST /predict` - Emotion classification (single image)
+- `POST /predict/batch` - Batch classification (multiple images)
+- `GET /emotions` - List of available emotions
+- `GET /docs` - Interactive Swagger documentation
+
+### 📸 Usage Example
+
+```python
+import requests
+
+# Make prediction
+with open("image.jpg", "rb") as f:
+    response = requests.post(
+        "https://your-space.hf.space/predict",
+        files={"file": f}
+    )
+
+result = response.json()
+print(f"Emotion: {result['emotion']}")
+print(f"Confidence: {result['confidence']:.2%}")
+```
+
+📚 **[See README_API.md for complete documentation](README_API.md)**
 
 ---
 
-## 💻 Instalação e Setup
+## 💻 Installation and Setup
 
-### Pré-requisitos
+### Prerequisites
 
 - **Python** 3.11+
-- **Git** para controle de versão
-- **Git LFS** para arquivos grandes (modelo 169MB)
-- **Câmera** (opcional, para captura ao vivo)
+- **Git** for version control
+- **Git LFS** for large files (169MB model)
+- **Camera** (optional, for live capture)
 
-### Instalação Rápida
+### Quick Installation
 
 ```bash
-# 1. Clone o repositório
+# 1. Clone repository
 git clone https://github.com/sidnei-almeida/cnn-emotion-classifier.git
 cd cnn-emotion-classifier
 
-# 2. Configure ambiente virtual (recomendado)
+# 2. Setup virtual environment (recommended)
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # venv\Scripts\activate   # Windows
 
-# 3. Instale dependências
-pip install -r requirements.txt
+# 3. Install API dependencies
+pip install -r requirements-api.txt
 
-# 4. Execute a aplicação
-streamlit run app.py
+# 4. Run the API
+uvicorn api:app --reload --host 0.0.0.0 --port 8000
+
+# 5. Access interactive documentation
+# http://localhost:8000/docs
 ```
 
-### 🔧 Configuração do Git LFS (Para Desenvolvedores)
+### 🔧 Git LFS Configuration (For Developers)
 
-**Para fazer upload do modelo grande (169MB) para o GitHub:**
+**To upload the large model (169MB) to GitHub:**
 
 ```bash
-# 1. Instalar Git LFS (se não tiver)
+# 1. Install Git LFS (if not installed)
 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
 sudo apt-get install git-lfs
 
-# 2. Inicializar LFS no repositório
+# 2. Initialize LFS in repository
 git lfs install
 
-# 3. Rastrear arquivos grandes
+# 3. Track large files
 git lfs track "*.keras"
 git lfs track "models/emotion_model_vgg_finetuned_stage2.keras"
 
-# 4. Adicionar e commit os arquivos
+# 4. Add and commit files
 git add .gitattributes models/emotion_model_vgg_finetuned_stage2.keras
-git commit -m "Adiciona modelo VGG16 com Git LFS"
+git commit -m "Add VGG16 model with Git LFS"
 
-# 5. Fazer push (irá usar LFS automaticamente)
+# 5. Push (will use LFS automatically)
 git push origin main
 ```
 
-**Nota:** O arquivo `.gitattributes` já está configurado para rastrear arquivos `.keras` com Git LFS.
+**Note:** The `.gitattributes` file is already configured to track `.keras` files with Git LFS.
 
-### 📋 Dependências Principais
+### 📋 Main Dependencies
 
 ```txt
-tensorflow-cpu==2.20.0    # ML Framework (CPU-only)
+fastapi>=0.104.0           # Modern web framework
+uvicorn[standard]>=0.24.0  # ASGI server
+tensorflow-cpu>=2.13.0     # ML Framework (CPU-only)
 opencv-python-headless     # Computer Vision
-streamlit                  # Interface Web
-plotly                     # Visualizações
-numpy                      # Computação Numérica
-pandas                     # Manipulação de Dados
+numpy                      # Numerical Computing
+pandas                     # Data Manipulation
+pillow                     # Image Processing
 ```
 
-### 🔗 Sistema de Auto-Download
+### 🔗 Required Files
 
-**Para usuários finais:** A aplicação baixa automaticamente os arquivos necessários (modelo treinado, dados de treinamento e detector de faces) do repositório GitHub na primeira execução usando **Git LFS**. Não é necessário ter o código fonte localmente!
+**Make sure you have the following files in the project:**
+- `models/emotion_model_final_vgg.h5` - Trained VGG16 model (169MB)
+- `training/training_summary_vgg_finetuned.json` - Training metrics
+- `haarcascade_frontalface_default.xml` - OpenCV face detector
 
-**Arquivos baixados automaticamente:**
-- `models/emotion_model_final_vgg.h5` - Modelo VGG16 treinado (169MB) via Git LFS ✅
-- `training/training_summary_vgg_finetuned.json` - Métricas de treinamento
-- `haarcascade_frontalface_default.xml` - Detector facial OpenCV
+> **Note:** The VGG16 model (169MB) can be hosted on GitHub using **Git LFS** or uploaded directly to the Hugging Face Space.
 
-> **✅ Resolvido:** O modelo VGG16 (169MB) agora é hospedado no GitHub usando **Git LFS** e baixado automaticamente na primeira execução.
+### 🔧 Development Configuration
 
-### 🔧 Configuração de Desenvolvimento
-
-Para desenvolvimento local com GPU (opcional):
+For local development with GPU (optional):
 ```bash
 pip uninstall tensorflow-cpu
 pip install tensorflow[and-cuda]
 ```
 
+### 🐳 Docker Deployment
+
+```bash
+# Build image
+docker build -t emotion-classifier-api .
+
+# Run container
+docker run -p 8000:8000 emotion-classifier-api
+```
+
+### 🚀 Deploy to Hugging Face Spaces
+
+See [README_API.md](README_API.md) for complete deployment instructions for Hugging Face Spaces.
+
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 cnn-emotion-classifier/
 ├── 📂 models/
-│   └── emotion_model_final_vgg.h5              # Modelo VGG16 treinado (169MB via LFS)
+│   └── emotion_model_final_vgg.h5              # Trained VGG16 model (169MB)
 ├── 📂 training/
-│   └── training_summary_vgg_finetuned.json      # Métricas do modelo VGG16
+│   └── training_summary_vgg_finetuned.json      # VGG16 model metrics
 ├── 📂 images/
-│   ├── angry.jpg, disgust.jpg, fear.jpg         # Imagens de exemplo para cada emoção
+│   ├── angry.jpg, disgust.jpg, fear.jpg         # Example images for each emotion
 │   ├── happy.jpg, neutral.jpg, sad.jpg
 │   └── surprised.jpg
 ├── 📂 notebooks/
-│   ├── 1_Data_Analysis.ipynb                    # Análise exploratória
-│   ├── 2_Model_Training.ipynb                   # CNN inicial
-│   ├── 3_VGG16_Fine_Tuning.ipynb               # Transfer Learning VGG16
-│   └── 4_VGG_Second_Tuning_Experiment.ipynb    # Experimento adicional
-├── 📄 app.py                                   # Aplicação principal
-├── 📄 image_pre_processing.py                   # Pré-processamento VGG16 (96x96px)
-├── 📄 haarcascade_frontalface_default.xml      # Detector Haar
-├── 📄 requirements.txt                          # Dependências (Keras 3.10.0)
-├── 📄 README.md                                 # Documentação
-└── 📄 LICENSE                                   # Licença MIT
+│   ├── 1_Data_Analysis.ipynb                    # Exploratory analysis
+│   ├── 2_Model_Training.ipynb                   # Initial CNN
+│   ├── 3_VGG16_Fine_Tuning.ipynb               # VGG16 Transfer Learning
+│   └── 4_VGG_Second_Tuning_Experiment.ipynb    # Additional experiment
+├── 📄 api.py                                    # Main FastAPI application
+├── 📄 image_pre_processing.py                   # VGG16 preprocessing (96x96px)
+├── 📄 haarcascade_frontalface_default.xml        # Haar detector
+├── 📄 Dockerfile                                # Docker configuration
+├── 📄 requirements-api.txt                      # API dependencies
+├── 📄 app.yaml                                  # Hugging Face Spaces configuration
+├── 📄 test_api.py                               # API test script
+├── 📄 README.md                                 # Main documentation
+├── 📄 README_API.md                              # API documentation
+└── 📄 LICENSE                                   # MIT License
 ```
 
 ---
 
-## 🎭 Emoções Detectadas
+## 🎭 Detected Emotions
 
-| Emoção | Emoji | Descrição | Precisão | Mensagem Motivacional |
-|--------|-------|-----------|----------|----------------------|
-| **Raiva** | 😠 | Estado de irritação | 89.2% | *"Mantenha a calma, respire fundo"* |
-| **Nojo** | 🤢 | Aversão ou repulsa | 76.5% | *"Vamos melhorar esse astral?"* |
-| **Medo** | 😨 | Estado de apreensão | 82.1% | *"Você é mais forte do que pensa!"* |
-| **Feliz** | 😄 | Estado de alegria | 94.7% | *"Continue espalhando esse sorriso!"* |
-| **Neutro** | 😐 | Expressão neutra | 67.8% | *"Vamos adicionar um pouco de cor?"* |
-| **Triste** | 😢 | Estado de tristeza | 85.3% | *"Depois da chuva vem o arco-íris!"* |
-| **Surpresa** | 😲 | Estado de espanto | 78.9% | *"O mundo está cheio de surpresas!"* |
+| Emotion | Emoji | Description | Precision | Motivational Message |
+|---------|-------|-------------|-----------|---------------------|
+| **Angry** | 😠 | State of irritation | 89.2% | *"Stay calm, take a deep breath"* |
+| **Disgust** | 🤢 | Aversion or repulsion | 76.5% | *"Let's improve that mood?"* |
+| **Fear** | 😨 | State of apprehension | 82.1% | *"You're stronger than you think!"* |
+| **Happy** | 😄 | State of joy | 94.7% | *"Keep spreading that smile!"* |
+| **Neutral** | 😐 | Neutral expression | 67.8% | *"Let's add some color?"* |
+| **Sad** | 😢 | State of sadness | 85.3% | *"After rain comes the rainbow!"* |
+| **Surprise** | 😲 | State of astonishment | 78.9% | *"The world is full of surprises!"* |
 
 ---
 
-## 🔬 Aspectos Técnicos
+## 🔬 Technical Aspects
 
-### 🤖 Arquitetura da Rede Neural
+### 🤖 Neural Network Architecture
 
-**Modelo VGG16 com Fine-Tuning:**
+**VGG16 Model with Fine-Tuning:**
 ```python
-# Base VGG16 pré-treinada no ImageNet (16 camadas convolucionais)
+# Base VGG16 pre-trained on ImageNet (16 convolutional layers)
 base_model = VGG16(weights='imagenet', include_top=False, input_shape=(96, 96, 3))
 
-# Congelar as camadas base (exceto as últimas)
+# Freeze base layers (except last ones)
 for layer in base_model.layers[:-4]:
     layer.trainable = False
 
-# Adicionar camadas personalizadas para classificação de emoções
+# Add custom layers for emotion classification
 model = Sequential([
     base_model,
     Flatten(),
@@ -233,80 +271,80 @@ model = Sequential([
     Dropout(0.5),
     Dense(128, activation='relu'),
     Dropout(0.3),
-    Dense(7, activation='softmax')  # 7 classes de emoções
+    Dense(7, activation='softmax')  # 7 emotion classes
 ])
 
-# Compilar com learning rate baixo para fine-tuning
+# Compile with low learning rate for fine-tuning
 model.compile(optimizer=Adam(learning_rate=1e-5),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 ```
 
-### 🔍 Processo de Detecção
+### 🔍 Detection Process
 
-1. **Captura de Imagem** - RGB via câmera ou upload
-2. **Conversão para Cinza** - Otimização para detecção facial
-3. **Haar Cascade** - Localização do rosto (OpenCV)
-4. **Recorte Facial** - Extração da região de interesse (colorida)
-5. **Redimensionamento** - 96x96 pixels para entrada do VGG16
-6. **Normalização** - Valores [0,1] para melhor convergência
-7. **Predição** - Classificação usando modelo VGG16 fine-tuned
-8. **Visualização** - Interface responsiva com resultados
-
----
-
-## 📚 Desenvolvimento e Contribuição
-
-### 🚀 Como Contribuir
-
-1. **Fork** o projeto
-2. **Crie uma branch** para sua feature:
-   ```bash
-   git checkout -b feature/nova-funcionalidade
-   ```
-3. **Commit** suas mudanças:
-   ```bash
-   git commit -m 'Adiciona nova funcionalidade incrível'
-   ```
-4. **Push** para a branch:
-   ```bash
-   git push origin feature/nova-funcionalidade
-   ```
-5. **Abra um Pull Request**
-
-### 📝 Diretrizes de Contribuição
-
-- ✅ **Testes obrigatórios** para novas funcionalidades
-- ✅ **Documentação atualizada** para mudanças significativas
-- ✅ **Código limpo** seguindo PEP 8
-- ✅ **Issues bem descritas** antes de implementar
-
-### 📓 Notebooks de Desenvolvimento
-
-**Jupyter Notebooks disponíveis:**
-- **1_Data_Analysis_And_Manipulation.ipynb** - Análise exploratória detalhada do dataset FER-2013
-- **2_Model_Creation_and_Training.ipynb** - Desenvolvimento e treinamento do modelo CNN inicial (59.3% acurácia)
-- **2.1_Model_Creation_and_Training.ipynb** - Versão alternativa do modelo CNN
-- **3_VGG16_Fine_Tuning.ipynb** - Implementação de Transfer Learning com VGG16 (72.0% acurácia)
-- **4_VGG_Second_Tuning_Experiment.ipynb** - Experimentos adicionais de fine-tuning do VGG16
-
-Todos os notebooks incluem:
-- 📊 Visualizações detalhadas do treinamento
-- 📈 Gráficos de acurácia e perda
-- 🔍 Análise de over fitting e under fitting
-- 📋 Métricas de performance completas
-
-### 🐛 Reportar Bugs
-
-Encontrou um problema? [Abra uma issue](https://github.com/sidnei-almeida/cnn-emotion-classifier/issues) com:
-- Descrição detalhada do problema
-- Passos para reproduzir
-- Comportamento esperado vs. atual
-- Capturas de tela (se aplicável)
+1. **Image Capture** - RGB via camera or upload
+2. **Grayscale Conversion** - Optimization for face detection
+3. **Haar Cascade** - Face localization (OpenCV)
+4. **Face Cropping** - Region of interest extraction (colored)
+5. **Resizing** - 96x96 pixels for VGG16 input
+6. **Normalization** - Values [0,1] for better convergence
+7. **Prediction** - Classification using fine-tuned VGG16 model
+8. **Response** - JSON response with results
 
 ---
 
-## 👥 Autor
+## 📚 Development and Contribution
+
+### 🚀 How to Contribute
+
+1. **Fork** the project
+2. **Create a branch** for your feature:
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Commit** your changes:
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+4. **Push** to the branch:
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+5. **Open a Pull Request**
+
+### 📝 Contribution Guidelines
+
+- ✅ **Mandatory tests** for new features
+- ✅ **Updated documentation** for significant changes
+- ✅ **Clean code** following PEP 8
+- ✅ **Well-described issues** before implementing
+
+### 📓 Development Notebooks
+
+**Available Jupyter Notebooks:**
+- **1_Data_Analysis_And_Manipulation.ipynb** - Detailed exploratory analysis of FER-2013 dataset
+- **2_Model_Creation_and_Training.ipynb** - Development and training of initial CNN model (59.3% accuracy)
+- **2.1_Model_Creation_and_Training.ipynb** - Alternative version of CNN model
+- **3_VGG16_Fine_Tuning.ipynb** - Transfer Learning implementation with VGG16 (72.0% accuracy)
+- **4_VGG_Second_Tuning_Experiment.ipynb** - Additional VGG16 fine-tuning experiments
+
+All notebooks include:
+- 📊 Detailed training visualizations
+- 📈 Accuracy and loss graphs
+- 🔍 Overfitting and underfitting analysis
+- 📋 Complete performance metrics
+
+### 🐛 Report Bugs
+
+Found a problem? [Open an issue](https://github.com/sidnei-almeida/cnn-emotion-classifier/issues) with:
+- Detailed problem description
+- Steps to reproduce
+- Expected vs. actual behavior
+- Screenshots (if applicable)
+
+---
+
+## 👥 Author
 
 <div align="center">
 
@@ -316,33 +354,33 @@ Encontrou um problema? [Abra uma issue](https://github.com/sidnei-almeida/cnn-em
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Sidnei_Almeida-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/saaelmeida93/)
 [![Portfolio](https://img.shields.io/badge/Portfolio-sidnei--almeida.github.io-000000?style=for-the-badge&logo=github)](https://sidnei-almeida.github.io)
 
-📧 **Contato:** [sidnei.almeida.dev@gmail.com](mailto:sidnei.almeida.dev@gmail.com)
+📧 **Contact:** [sidnei.almeida.dev@gmail.com](mailto:sidnei.almeida.dev@gmail.com)
 
 </div>
 
 ---
 
-## 📄 Licença
+## 📄 License
 
-Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](LICENSE) para detalhes.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Agradecimentos
+## 🙏 Acknowledgments
 
-- **FER-2013 Dataset** - Conjunto de dados de referência para treinamento
-- **OpenCV Community** - Biblioteca essencial para Computer Vision
-- **TensorFlow Team** - Framework robusto e escalável
-- **Streamlit Community** - Interface web intuitiva e poderosa
+- **FER-2013 Dataset** - Reference dataset for training
+- **OpenCV Community** - Essential library for Computer Vision
+- **TensorFlow Team** - Robust and scalable framework
+- **FastAPI Community** - Modern and fast web framework
 
 ---
 
 <div align="center">
 
-**⭐ Se este projeto foi útil, considere dar uma estrela!**
+**⭐ If this project was useful, consider giving it a star!**
 
 [![Stars](https://img.shields.io/github/stars/sidnei-almeida/cnn-emotion-classifier?style=social)](https://github.com/sidnei-almeida/cnn-emotion-classifier)
 
-*Desenvolvido com ❤️ e muita ☕ em Caxias do Sul, Brasil*
+*Developed with ❤️ and lots of ☕ in Caxias do Sul, Brazil*
 
 </div>

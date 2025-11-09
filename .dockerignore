@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Models (will be downloaded or mounted)
+# models/*.h5
+# models/*.keras
+
+# Old application files (removed - API only)
+# app.py, app_backup.py, app_new.py, app.py.bak were removed
+
+# Documentation
+README.md
+*.md
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Other
+*.log
+.DS_Store
+deploy.sh
+

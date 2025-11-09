@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-# The .xml file should be in the same directory as your Streamlit app,
+# The .xml file should be in the same directory as the application,
 # or the full path must be provided here.
 CASCADE_PATH = 'haarcascade_frontalface_default.xml'
 
